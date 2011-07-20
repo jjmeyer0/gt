@@ -1,0 +1,89 @@
+\section{Reference: GT Grammar}
+
+Below is a general description of gt's grammar. The actual grammar definition can be
+found in the parse.mly file located in \textit{gt/src}. For examples of grammar files please
+read Chapter 2, Examples, or look at the .gra files in the gt/tests/ directory. \\
+
+\[
+\begin{array}{lll}
+\textit{grammar} & \to^m & \textit{ID}\ \textit{LINECOMMENT}\ =\ \textit{IQUOTED}\ .\ \textit{pls}\  \textit{highlights} \\
+\textit{grammar} & \to^m & \textit{ID}\ \textit{pls}\ \textit{highlights} \\ \\
+\textit{pls} & \to^m & \textit{production}\ \textit{lexclasses}\ \\
+\textit{pls} & \to^m & \textit{production}\ \textit{pls} \\ \\ 
+\textit{production} & \to^m & \textit{ID}\ :\ \textit{ID}\ \ \textnormal{->}\ \textit{prod\_body}\ . \\ 
+\textit{production} & \to^m & \textit{ID}\ :\ \textit{ID}\ \ \textnormal{->}\ . \\ \\ 
+\textit{prod\_body} & \to^m & |\ \textit{elements}\ \textit{prod\_ors} \\
+\textit{prod\_body} & \to^m & \textit{elements}\ \textit{prod\_ors} \\\\
+\textit{prod\_ors} & \to^m & |\ \textit{elements}\ \textit{prod\_ors} \\
+\textit{prod\_ors} & \to^m & \ \\ \\
+\textit{symbol} & \to^m & \textit{ID} \\ \\
+\textit{elements} & \to^m & \textit{element}\ \textit{elements} \\
+\textit{elements} & \to^m & \textit{element}\ \\ \\ 
+\end{array}
+\]
+
+
+
+\[
+\begin{array}{lll}
+\textit{element} & \to^m & \textit{symbol} \\
+\textit{element} & \to^m & [\ \textit{prod\_body}\ ] \\
+\textit{element} & \to^m & \{\ \textit{prod\_body}\ \}\ (\ \textit{lr}\  ,\ \textit{GTE}\  \textit{NONNEG}\  )\ \\
+\textit{element} & \to^m & \{\ \textit{prod\_body}\ \}\ + \\
+\textit{element} & \to^m & \{\ \textit{prod\_body}\ \}\ * \\ \\
+\textit{highlights} & \to^m & \textit{EOF} \\
+\textit{highlights} & \to^m & \textit{FILEEXT}\ =\ \textit{IQUOTED} \textit{KEYWORDS}\ =\ \textit{keywords} \\\\
+\textit{keywords} & \to^m & \textit{keyword} \\
+\textit{keywords} & \to^m & \textit{keyword}\ \textit{keywords} \\\\
+\textit{keyword} & \to^m & (\ \textit{IQUOTED}\ \textit{qts}\ )\ :\ \textit{tp}\\\\
+\textit{qts} & \to^m & \ \\
+\textit{qts} & \to^m & ,\ \textit{IQUOTED}\ \textit{qts} \\\\
+\textit{COMMENT} & = & "\textnormal{comment}" \\
+\textit{NOTE} & = & "\textnormal{note}" \\
+\textit{INTEGER} & = & "\textnormal{integer}" \\
+\textit{FLOAT} & = & "\textnormal{float}" \\
+\textit{DEC} & = & "\textnormal{dec}" \\
+\textit{STRING} & = & "\textnormal{string}" \\
+\textit{KEYW} & = & "\textnormal{keyword}" \\
+\textit{TYPE} & = & "\textnormal{type}" \\
+\textit{SPECHAR} & = & "\textnormal{special}" \\
+\textit{BOOL} & = & "\textnormal{bool}" \\
+\textit{ERR} & = & "\textnormal{error}" \\
+\textit{META} & = & "\textnormal{meta}" \\\\
+\textit{lr} & \to^m & \textit{LEFT} \\
+\textit{lr} & \to^m & \textit{RIGHT} \\ \\
+\textit{lexclasses} & \to^m & \textit{lexclass}\ \textit{lexclasses} \\
+\textit{lexclasses} & \to^m & \textit{lexclass} \\ \\
+\textit{lexclass} & \to^m & \textit{ID}\ =\ \textit{quoted}\ . \\ \\
+\textit{quoted} & \to^m & \textit{QUOTED}\ \textit{end\_quoted} \\
+\textit{quoted} & \to^m & \textit{CHAR} \textit{QUOTED}\ \textit{end\_quoted} \\
+\textit{quoted} & \to^m & \textit{IQUOTED} \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \\ \\
+\textit{end\_quoted} & \to^m & \textit{END\_QUOTED}\\ \\ 
+\end{array}
+\]
+
+
+\[
+\begin{array}{lll}
+\textit{LEFT} & = & "\textnormal{left}" \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \\
+\textit{RIGHT} & = & "\textnormal{right}" \\
+\textit{GTE} & = & "\textnormal{$>$=}"" \\
+\textit{LINECOMMENT} & = & "\textnormal{line\_comment}"\\
+\textit{IQUOTED} & = & \textnormal{a string enclosed in quotes with all ",  \textbackslash n} \\
+\ & \  & \textnormal{and \textbackslash \ characters escaped} \\
+\textit{ID} & = & \textnormal{a list of characters starting with a letter and followed } \\
+\  & \  & \textnormal{by 0 or many letters, numbers and/or underscores} \\
+\textit{END\_QUOTED} & = & "\texttt{\}\}}" \\
+\textit{QUOTED} & = & \textnormal{anything except two consecutive '\}' characters} \\
+\textit{CHAR} & = & "\textnormal{char}" \\
+\textit{EOF} & = &  \textnormal{ end of file } \\
+\textit{NONNEG} & = & \textnormal{ a non-negative integer } \\ 
+\end{array}
+\]
+
+\subsection{Gt Download Links}
+Below is a list of links to download gt.
+\begin{itemize}
+\item https://github.com/jjmeyer0/grammar-tool
+\end{itemize}
+\input{./ref/output-files}

@@ -1,0 +1,75 @@
+\section{Reference: Generating Functions with MLCF}
+
+Below is a general description of mlcf's (meta language for common functions) grammar. The actual grammar definition can be
+found in the mlcf\_parse.mly file in the \textit{src} directory of mlcf or in the mlcf.gra file in the \textit{mlcf} directory. 
+It is not required to understand mlcf. A user will never have to use this tool unless one of the files that is created 
+by it was deleted or broken. However, if a user would like to extend gt, mlcf may be usefule. Mlcf is basically a template for iterating
+through the productions of a gt grammar. It also, has common predefined functions that can be used when defining an mlcf function 
+For examples of mlcf function please look at the mlcf in the \textit{mlcf/functions/} directory. The mlcf functions modify 
+\textit{dump\_mlcf\_*} files in \textit{gt/src/}. The following grammar definition is based on mlcf.gra:\\
+\[
+\begin{array}{lll}
+\textit{program} & \to^m & \ [\ \textit{ID}\ \textit{ENDEACH}\ =\ \textit{IQUOTED}\ ]^m\ [\ \textit{MLGLOBAL}\ ]^m\ \textit{const}\ \{\ \textit{body}\ \}*^m \\
+
+
+\textit{const} & \to^m & \textit{ID}\ \textit{(}\ \textit{ID} \textit{,}  \textit{ID}\ \textit{...}\ \textit{,}  \textit{ID}\ \textit{)}\ \textit{-$>$} \\ 
+\textit{body} & \to^m & \textit{OCAMLGLOBAL} \\
+\textit{body} & \to^m & \textit{METACODE}\ \textit{ID} \ \textit{SEPBY} \\ \\
+
+\textit{ENDEACH} & = & "\textnormal{end\_of\_each\_match}" \\
+
+\textit{MLGLOBAL} & = & \textnormal{starts with \{\{, ends with \}\} and allows anything in between } \\
+\textit{METACODE} & = & \textnormal{starts with (\~{}, ends with \~{}$|$ and allows anything in between } \\
+\textit{SEPBY} & = & \textnormal{starts with \~{}$|$, ends with \~{}) and allows anything in between } \\
+\textit{ID} & = & \textnormal{A string that starts with an upper/lower-case letter followed } \\
+\ & \ & \textnormal{by numbers, letters and/or \_} \\
+\textit{IQUOTED} & = & \textnormal{standard string literal} 
+\end{array}
+\]
+
+\subsection{Example: Pretty Printer function}
+
+There are four basic parts to an mlcf definition: the function name, a code block before iterating through the productions,
+the body of the iteration function and a code block that is to be executed after iterating through the productions. The function
+name -- below it is defined as \textit{pp} -- is used in the filename of the dumped function and in naming some predefined
+functions that are used when defining mlcf functions. 
+
+The code blocks can have any valid OCaml code in them. The iteration block --
+where most of the OCaml code is written -- has three parts: the code block, the counter variable and with what to separate
+each iteration. There are a few predefined functions is\_list, is\_opt, is\_terminal, is\_in\_ast and string\_of\_terminal that can 
+be used in any mlcf program definition. Below the function pp\_i refers to the pretty printer function name that will be used for
+the current element. This function will always be named \textit{function\_name}\_i. The function x\_i refers to the element to 
+pretty print and it will be named with the first letter of \textit{x1} followed by \textit{\_i}. \\
+
+\noindent Below is the complete mlcf definition for the pretty printer function. 
+\begin{lstlisting} [language=ML]
+pp
+
+PrettyPrinter (P, x1,...,xn)-> 
+{{ emit_pattern 0; os " -> "; }}
+
+(~
+if(is_terminal) then (
+	os ("print_new_line os to_pretty_print (fst d); ");
+	if(is_in_ast) then (
+		os " pp_terminal os to_pretty_print "
+	) else (
+		os ("print_new_line os to_pretty_print (fst "^x_i^"); ");
+		os "os "; os string_of_terminal
+	);
+) else (
+	os pp_i; os " os to_pretty_print "
+);
+
+if(is_cur_eq_first_nt && (is_list || is_opt)) then (
+	os ( " (d,"^x_i^")" );
+) else if not(is_terminal && not is_in_ast) then (
+	os ( x_i );
+);
+
+if(is_terminal) then os "; os \" \" ";
+
+~| i ~| ; ~)
+
+{{ os " () "; }}
+\end{lstlisting}

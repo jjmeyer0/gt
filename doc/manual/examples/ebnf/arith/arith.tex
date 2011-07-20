@@ -1,0 +1,80 @@
+\subsection{EBNF - Arith}
+This example is similar to the previous two, but we added a few more productions and lexical classes.
+We do this by adding unary operations and single length character variables to the grammar definiton. The most important 
+differences in this example are the productions that utilize the optional and production ors notion and the
+lexical definition that uses the keyword \textit{char}.
+
+The first difference is the optional notation. Below we can see that \textit{unary\_op} is optional because it is
+between brackets and anything in between square brackets will be transformed into the OCaml optional type
+by gt when generating the parser. \\
+%
+%
+\begin{gt}
+Fact : factor -> [ unary_op ] element.
+\end{gt}\ \\
+%
+%
+The next major change is the use of vertical bars to denote a type has multiple definitions. This 
+can be very useful because it cuts back on defining extra productions. Instead of 
+having three different productions for \textit{element} we create one and utilize gt's EBNF notation to define the 
+several different possibilities for element.\\
+%
+%
+\begin{gt} 
+Element : element -> INT | VAR | LPAREN expr RPAREN.
+\end{gt}\ \\
+%
+%
+The last major change is the use of the keyword \textit{char}. If the regular expression for a lexical
+definition has a maximum length of one then this keyword is needed. \\
+%
+%
+\begin{gt} 
+VAR = char {{ ['a'-'z''A'-'Z']}}.
+\end{gt}\ \\
+%
+%
+Gt also supports basic definitions for Emacs and Gedit syntax modes. It is very simple to define basic syntax
+modes for the user created language using gt. The first thing the user needs to do is to define a file extensions.
+After a file extension is defined the user can map terminals that are not in the abstract syntax tree to
+predefined keywords. If the user does not define a syntax mode every terminal that is not in the abstract syntax tree
+will be mapped to \textit{keyword} and the file extension will be the \textit{grammar\_name}. \\
+\begin{gt}
+file_ext = "gra"
+keywords = 
+	("x","+","-") : special
+	(")","(") : keyword
+\end{gt} 
+%
+Below is the whole grammar definition for the \textit{arith} grammar. The file name is \textit{ebnf-example.gra} and it can 
+be located in the \textit{gt/tests/ebnf} directory.\\
+%
+%
+\begin{gt}
+arith
+
+Term : expr -> factor { op factor }(right,>=0).
+Fact : factor -> [ unary_op ] element.
+Element : element -> INT | VAR | LPAREN expr RPAREN.
+
+Op : op -> PLUS | TIMES.
+UnaryOp : unary_op -> MINUS.
+
+PLUS = "+".
+TIMES = "x".
+MINUS = "-".
+LAPREN = "(" .
+RPAREN = ")".
+INT = {{ ['0'-'9']+ }}.
+VAR = char {{ ['a'-'z''A'-'Z']}}.
+
+file_ext = "gra"
+keywords = 
+	("x","+","-") : special
+	(")","(") : special
+\end{gt} 
+
+
+\input{./examples/ebnf/arith/genfunctions}
+
+\input{./examples/ebnf/arith/syntrees}

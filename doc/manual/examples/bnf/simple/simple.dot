@@ -1,0 +1,37 @@
+
+
+
+
+graph hopeful { 
+node [shape="plaintext"];
+Expr0;
+Expr0[label="Expr"];
+Expr0 -- Expr00_med0;
+Expr00_med0[label="x"];
+Expr0[label="Expr"];
+Expr0 -- Expr00_med1;
+Expr00_med1[label="+"];
+Expr0[label="Expr"];
+Expr0 -- Expr1;
+Expr1[label="Expr"];
+Expr1 -- Expr11_med0;
+Expr11_med0[label="x"];
+Expr1[label="Expr"];
+Expr1 -- Expr11_med1;
+Expr11_med1[label="+"];
+Expr1[label="Expr"];
+Expr1 -- Expr2;
+Expr2[label="Expr"];
+Expr2 -- Expr22_med0;
+Expr22_med0[label="x"];
+Expr2[label="Expr"];
+Expr2 -- Expr22_med1;
+Expr22_med1[label="+"];
+Expr2[label="Expr"];
+Expr2 -- Id3;
+Id3[label="Id"];
+Id3 -- Id33_med0;
+Id33_med0[label="x"];
+}
+
+

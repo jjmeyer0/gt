@@ -1,0 +1,116 @@
+\documentclass{report}
+
+% Packages
+\usepackage{graphicx}
+\usepackage[usenames,dvipsnames]{color}
+\usepackage{listings}
+\usepackage{color}
+\usepackage[T1]{fontenc}
+\usepackage{textcomp}
+\usepackage{lmodern}
+\usepackage{caption}
+
+% Definitions
+\definecolor{light-gray}{gray}{0.95}
+
+
+\lstnewenvironment{gt}{
+\lstset{
+         literate= {\{\{}{{{\color{OliveGreen}\{\{}}}2 {\}\}}{{{\color{OliveGreen}\}\}}}}2{>=}{{{\color{blue}>=}}}2,
+	basicstyle=\ttfamily\footnotesize, 
+	backgroundcolor=\color{light-gray}, 
+	showspaces=false,
+	numbers=left,
+	showstringspaces=false,
+	showtabs=false,
+	frame=single,
+	upquote=true,
+	numberstyle=\tiny,
+	breaklines=true,
+         %literate={'"'}{\textquotesingle\ " \textquotesingle}{1}{\"}{"}{1},
+         emph={line_comment,left,right,char},
+         emphstyle=\color{blue},
+         stringstyle=\color{red},
+         }
+         }{}
+
+\lstset{language=ML,%
+	basicstyle=\ttfamily\footnotesize,
+	tabsize=2,
+	numbers=left,
+	numberstyle=\tiny,
+	backgroundcolor=\color{light-gray}, 
+	showspaces=false,
+	showstringspaces=false,
+	showtabs=false,
+	frame=single,
+	upquote=true,
+	breaklines=true,
+	emph={let,ref,String,List,open,rec,as,and,if,then,else,type,false,true,function,failwith},
+	emphstyle=\color{blue}\bfseries,
+	%literate={'"'}{\textquotesingle\ "\textquotesingle}{1}{\"}{"}{1},
+	literate={'"'}{'"'}{1}{``}{"}{1},
+	stringstyle=\color{red},
+	}
+
+\lstset{language=bash,%
+	basicstyle=\ttfamily\footnotesize,
+	tabsize=2,
+	numbers=left,
+	numberstyle=\tiny,
+	backgroundcolor=\color{light-gray}, 
+	showspaces=false,
+	showstringspaces=false,
+	showtabs=false,
+	frame=single,
+	upquote=true,
+	breaklines=true,
+	%literate={'"'}{\textquotesingle\ "\textquotesingle}{1}{\"}{"}{1},
+	stringstyle=\color{red},
+	}
+	
+
+\begin{document}
+\date{}
+\title{
+{\Huge \bf Grammar Tool (gt)}\\
+{User's manual}\\
+{Version 1}\\
+}
+
+\author{
+Josh Meyer and Aaron Stump\\
+{(with contributions from Vilhelm Sj\"{o}berg)}
+}
+
+\date{\today}
+\maketitle
+
+% Table of Contents
+\tableofcontents
+
+% User Manual
+\part{User Manual}
+
+% Introduction
+\chapter{Introduction}
+\input{./intro/introduction}
+
+% Examples
+\chapter{Examples}
+\input{./examples/examples}
+
+% Reference Manual
+\part{Reference Manual}
+
+% Grammar Tool
+\chapter{Grammar Tool (gt)}
+\input{./ref/gtref}
+
+% MLCF
+\chapter{Meta Language for Common Functions (mlcf)}
+\input{./ref/mlcfref}
+
+
+
+\end{document}

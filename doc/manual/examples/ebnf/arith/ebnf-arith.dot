@@ -1,0 +1,57 @@
+
+
+
+
+graph hopeful { 
+node [shape="plaintext"];
+Term0;
+Term0[label="Term"];
+Term0 -- Fact1;
+Fact1[label="Fact"];
+Fact1 -- Option52;
+Option52[label="None"];
+Fact1[label="Fact"];
+Fact1 -- Element3;
+Element3[label="Element"];
+Element3 -- Element33_med0;
+Element33_med0[label="3"];
+Term0[label="Term"];
+Term0 -- Op5;
+Op5[label="Op"];
+Op5 -- Op55_med1;
+Op55_med1[label="*"];
+Term0[label="Term0"];
+Term0 -- Fact6;
+Fact6[label="Fact"];
+Fact6 -- Option47;
+Option47[label="Option"];
+Option47 -- UnaryOp8;
+UnaryOp8[label="UnaryOp"];
+UnaryOp8 -- UnaryOp88_med0;
+UnaryOp88_med0[label="-"];
+Fact6[label="Fact"];
+Fact6 -- Element9;
+Element9[label="Element"];
+Element9 -- Element99_med1;
+Element99_med1[label="a"];
+Term0[label="Term0"];
+Term0 -- Op11;
+Op11[label="Op"];
+Op11 -- Op1111_med0;
+Op1111_med0[label="+"];
+Term0[label="Term0"];
+Term0 -- Fact12;
+Fact12[label="Fact"];
+Fact12 -- Option513;
+Option513[label="None"];
+Fact12[label="Fact"];
+Fact12 -- Element14;
+Element14[label="Element"];
+Element14 -- Element1414_med1;
+Element1414_med1[label="b"];
+Term0[label="Term0"];
+Term0 -- Term015_med0;
+Term015_med0[label="[]"];
+}
+
+

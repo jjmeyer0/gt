@@ -1,0 +1,63 @@
+%\section{Motivation}
+OCamlyacc generates a parser from a set rules that are defined by the user in syntax similar to BNF, and OCamllex 
+translates a set of regular expressions to a lexical analyzer. The goal of gt is to allow the user to easily 
+define a context-free grammar in one file and then generate the corresponding parser, lexical analyzer and syntax
+trees based on the rules defined in the file. In addition, gt adds support for EBNF notation. Here is an example 
+of an input file: \\
+\begin{gt} 
+lists
+
+Grammar : grammar -> { olist }*.
+
+OList : olist -> LSBRACKET [ element { SEMI element }* ] RSBRACKET.
+
+Element :  element -> VAR | INT.
+
+LSBRACKET = "[".
+RSBRACKET = "]".
+SEMI = ";".
+
+VAR = {{ ['a'-'z''A'-'Z'] ['a'-'z''A'-'Z''0'-'9''_']* }}.
+INT = {{ ['0'-'9']+ }}.
+\end{gt}\ \\
+Gt takes a file in the format shown above and generates multiple OCaml source files, as show in Figure 1.1. These
+files can then be compiled to an executable.
+
+\begin{figure}[h!]
+  \centering
+  \includegraphics[width=5.3in]{./intro/gt.png}
+  \caption{}
+\end{figure}\ \\
+After the files in Figure 1.1 are compiled the executable is ready to parse programs such as, [ 0 ; a ; 1 ], to
+syntax trees like the one shown in Figure 1.2. The syntax tree in Figure 1.2 was actually generated, in Graph-viz
+format, by the same executable.
+
+Along with the ability to easily generate parsers, gt generates many useful functions. For example dump\_gviz,
+which creates a Graph-Viz file containing a syntax tree definition for a given parseable file. The file names listed below are 
+some of names corresponding to the gt generated files. Below the keyword \textit{grammar\_name} refers to the name of the 
+grammar. For example, for the definition above \textit{grammar\_name} would would refer to lists \textit{lists}. 
+
+\begin{figure}[h!]
+  \centering
+  \includegraphics[width=4.5in]{./intro/lists.png}
+  \caption{}
+\end{figure}\ \\
+\[
+\begin{array}{ll}
+\textnormal{\bf{Generated Files}} & \bf{Function\ Type} \\
+\textit{grammar\_name}\_gviz.ml  & (string \to unit) \to bool \to string \to start\_sym \to unit \\
+\textit{grammar\_name}\_eq.ml  & (start\_sym * start\_sym) \to bool \\
+\textit{grammar\_name}\_pp.ml & (string \to unit) \to bool \to start\_sym \to unit \\
+\textit{grammar\_name}\_ppast.ml & (string \to unit) \to bool \to start\_sym \to unit \\
+\textit{grammar\_name}\_syntax.ml & start\_sym \to (int * string) \\
+\ & \ \\
+\textnormal{\bf{Generated Files}} & \bf{Function} \\
+\textit{grammar\_name}\_parse.mly & \textnormal{Generated Parser} \\
+\textit{grammar\_name}\_lex.mll & \textnormal{Generated Lexical Analyser} \\
+\textit{grammar\_name}\_main.ml & \textnormal{Main function} \\
+\textit{grammar\_name}\_util.ml & \textnormal{Position data} 
+\end{array}
+\]
+
+\input{./intro/tutorial}
+\input{./intro/install}

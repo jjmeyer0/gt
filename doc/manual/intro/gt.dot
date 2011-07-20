@@ -1,0 +1,41 @@
+digraph hopeful {
+	node [shape=record];
+	overlap=false;
+	listsgra[label="lists.gra"];
+	gt[label="gt"];
+	lists_parse[label="lists_parse.mly"];
+	lists_lex[label="lists_lex.mll"];
+	lists_syntax[label="lists_syntax.ml"];
+	lists_main[label="lists_main.ml"];
+	lists_util[label="lists_util.ml"];
+	genfuns[label="Helpful functions"];
+	parseable[label="parseable file"];
+	OCamlc[label="OCamlc"];
+	lists[label="lists"];
+	outputted[label="outputted info"];
+
+	listsgra -> gt;
+	gt -> lists_parse;
+	gt -> lists_lex;
+	gt -> lists_syntax;
+	gt -> lists_main;
+	gt -> lists_util;
+	gt -> genfuns;
+
+	lists_parse -> OCamlc;
+	lists_lex -> OCamlc;
+	lists_syntax -> OCamlc;
+	lists_main -> OCamlc;
+	lists_util -> OCamlc;
+	genfuns -> OCamlc
+
+	parseable -> lists;
+	OCamlc -> lists;
+	
+	
+
+	lists -> outputted;
+	
+}
+
+
