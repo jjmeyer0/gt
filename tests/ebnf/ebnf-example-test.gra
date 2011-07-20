@@ -1,0 +1,13 @@
+arith
+
+Term : expr -> { PLUS | TIMES | MINUS | LPAREN | RPAREN | INT | VAR  }+.
+
+
+PLUS = "+".
+TIMES = "*".
+MINUS = "-".
+LPAREN = "(".
+RPAREN = ")".
+
+INT = {{['0'-'9']+}}.
+VAR = char {{ ['a'-'z''A'-'Z'] }}.

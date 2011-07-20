@@ -1,0 +1,26 @@
+sample
+
+line_comment = "#".
+
+Plus :  expr -> expr PLUS term.
+Minus : expr -> expr MINUS term.
+Term :  expr -> term.
+
+Times : term -> term TIMES factor.
+Factor : term -> factor.
+
+Int : factor -> POSINT.
+Var : factor -> VARIABLE.
+Expr : factor -> LPAREN expr RPAREN.
+
+POSINT = {{ ['0'-'9']+ }}.
+VARIABLE = {{ ['a'-'z' 'A'-'Z'] ['a'-'z' 'A'-'Z' '0'-'9' '\'' '_']* }}.
+
+PLUS = "+".
+TIMES = "*".
+MINUS = "-".
+LPAREN="(".
+RPAREN=")".
+
+
+

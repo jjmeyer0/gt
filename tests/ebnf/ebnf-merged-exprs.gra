@@ -1,0 +1,23 @@
+expr2
+
+line_comment = "#".
+
+(* basic EBNF grammar for exprs built from integers with right-associative plus,
+   left-associative times. *)
+
+Term : expr -> { factor TIMES }(left,>=0) factor { PLUS { factor TIMES }(left,>=0) factor }*.
+Int : factor -> INT.
+Expr : factor -> RPAREN expr LPAREN.
+
+INT = {{['0'-'9']+}}.
+PLUS = "+".
+TIMES = "*".
+RPAREN = "(".
+LPAREN = ")".
+
+
+
+file_ext = "expr"
+keywords =
+	("+","*") : type 
+	("(",")") : special

@@ -1,0 +1,43 @@
+This part is not needed unless you created a function with mlcf or
+an mlcf file was deleted/broken (eg. dump_mlcf_*). We are assuming 
+the user is in "gt/" directory:
+
+   make clean
+   make
+   make update
+
+
+Assuming you are in "gt/src" directory:
+
+The usage of gt is shown below. Below, file is referring to a path of a 
+parseable grammar file. First, from a terminal, navigate to gt/src/. 
+Then execute the following commands.
+   
+   make clean 
+   make 
+   ./gt file 
+   make emitted
+
+The command "make clean" will remove all of the compiled OCaml files. 
+The next command "make" will compile gt and generate a file called gt, 
+the grammar tool that will generate a parser from a grammar definition. 
+To use gt use the command "./gt file" where file is a path to a grammar 
+file. Now that gt has generated all of the necessary files use the command 
+"make emitted" to compile your parser. 
+
+
+Once this has been done a parser with the same name as the grammar name in 
+the corresponding grammar file has been created. Below is how to use the
+generated parser.
+
+./grammar_name [options] <file> 
+The options are:
+   -p      Reprints the contents of <file> to
+           <file>pp.txt. Without this option
+           the contents are printed to the terminal.
+   -a      Prints a text view of <file>'s AST to 
+           <file>ast.txt.
+   -g      Outputs a Graphviz file named <file>gviz.dot
+           that contains a visual representation of <file>'s
+           syntax tree.
+   -help   Shows this. 

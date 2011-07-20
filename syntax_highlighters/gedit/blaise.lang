@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<language id="blaise" _name="Blaise" version="2.0" _section="Others">
+
+	<metadata>
+	  <property name="mimetypes">text/x-blaise</property>
+	  <property name="globs">*.bls</property>
+	</metadata>
+	
+	<styles>
+		<style id="string" _name="String" map-to="def:string"/>
+		<style id="comment" _name="Comment" map-to="def:comment"/>
+		<style id="gte" _name="Base-N Integer" map-to="def:base-n-integer"/>
+		<style id="escaped-character" _name="Escaped Character" map-to="def:special-char"/>
+		<style id="preprocessor" _name="Preprocessor" map-to="def:preprocessor"/>
+		<style id="included-file" _name="Included File" map-to="def:string"/>
+		<style id="char" _name="Character" map-to="def:character"/>
+		<style id="keyword" _name="Keyword" map-to="def:keyword"/>
+		<style id="type" _name="Data Type" map-to="def:type"/>
+		<style id="lr" _name="Boolean value" map-to="def:boolean"/>	
+	</styles>
+
+	<definitions>
+		<context id="blaise">
+			<include>
+				<context id="string" end-at-line-end="true" style-ref="string">
+					<start>"</start>
+					<end>"</end>
+					<include>
+						<context id="escaped-character" style-ref="escaped-character">
+							<match>\\.</match>
+						</context>
+					</include>
+				</context>
+
+				<context id="line-comment" style-ref="comment" end-at-line-end="true" class="comment" class-disabled="no-spell-check">
+					<start>#</start>
+					<include>
+						<context ref="def:in-line-comment"/>
+					</include>
+				</context>
+
+				<!-- <context id="type" end-at-line-end="false" style-ref="type">
+					<start>{{</start>
+					<end>}}</end>
+					<include>
+						<context ref="escaped-character"/>
+					</include>
+				</context> -->
+
+            <!-- <context id="comment-multiline" style-ref="preprocessor">
+            		<start>\(\*</start>
+               <end>\*\)</end>
+               <include>
+               	<context ref="def:in-comment"/>
+               </include>
+            </context> -->
+
+				<context id="constructor" style-ref="type">
+	  				<match>\b[A-Z][A-Za-z0-9_]*[ ]*[:]</match>
+				</context>
+
+				<!-- <context id="nonterminal" style-ref="lr">
+	  				<match>\b[a-z][A-Za-z0-9_]*[ ]*[-][&gt;]</match>
+				</context> -->
+
+				<context id="terminal" style-ref="keyword">
+	  				<match>\b[A-Z][A-Z0-9_]*</match>
+				</context>
+
+				<!-- <context id="astgte" style-ref="gte">
+	  				<match>[>][=][0-9]*</match>
+				</context> -->
+
+				<!-- Flow control & common keywords -->
+				<context id="astlr" style-ref="lr">
+				  <keyword>new</keyword>
+				  <keyword>of</keyword>
+				  <keyword>case</keyword>
+				  <keyword>alias</keyword>
+				  <keyword>to</keyword>
+				  <keyword>disconnect</keyword>
+				  <keyword>connect</keyword>
+				  <keyword>consume</keyword>
+				  <keyword>update</keyword>
+				  <keyword>assert</keyword>
+				  <keyword>Cell</keyword>
+				  <keyword>delete</keyword>
+				  <keyword>abort</keyword>
+				</context>
+
+				<!-- Flow control & common keywords -->
+				<context id="defs" style-ref="preprocessor">
+				  <keyword>define</keyword>
+				  <keyword>fun</keyword>
+				  <keyword>end</keyword>
+				  <keyword>eval</keyword>
+				  <keyword>var</keyword>
+				  <keyword>clone</keyword>
+				  <keyword>Fun</keyword>
+				  <keyword>datatype</keyword>
+				  <keyword>external</keyword>
+				</context>
+
+				<!-- Flow control & common keywords -->
+				<context id="type" style-ref="type">
+				  <keyword>end</keyword>
+				  <keyword>type</keyword>
+				  <keyword>datatype</keyword>
+				  <keyword>string</keyword>
+				  <keyword>int</keyword>
+				</context>
+
+
+
+			</include>		
+		</context>			
+    </definitions>
+</language>

@@ -1,0 +1,19 @@
+expr
+
+line_comment = "#".
+
+
+
+Plus : expr -> term { PLUS term }*.
+Mult : term -> { factor TIMES }(left,>=0) factor.
+
+
+Int : factor -> INT.
+Expr : factor -> LPAREN expr RPAREN.
+
+INT = {{ ['0'-'9']+ }}.
+PLUS = "+".
+TIMES = "*".
+LPAREN = "(".
+RPAREN = ")" .
+

@@ -1,0 +1,55 @@
+gtt
+(* *)
+
+
+Grammar : grammar -> ID [ LINECOMMENT EQUALS IQUOTED ]  defs.
+
+Defs : defs -> production defs.
+Defsd : defs -> production { lex_class }+.
+
+Production : production -> ID COLON ID ARROW elements { BAR elements }* .
+
+Elements : elements -> { element }+.
+Element : element -> ID.
+ElementStar : element -> LCURLY elements RCURLY TIMES.
+ElementPlus : element -> LCURLY elements RCURLY PLUS.
+ElementLR : element -> LCURLY elements RCURLY LPAREN lr COMMA GTE NONNEG RPAREN.
+ElementOpt : element -> LSQR_BRACKET elements RSQR_BRACKET.
+
+LeftOrRight : lr -> LEFT | RIGHT.
+
+LexClass : lex_class -> ID EQUALS IQUOTED | ID EQUALS [ CHAR ] QUOTED.
+
+BAR = "|".
+ARROW = "->".
+COLON = ":".
+EQUALS = "=".
+LEFT = "left" .
+RIGHT = "right".
+GTE = ">=".
+LSQR_BRACKET = "[".
+RSQR_BRACKET = "]".
+LCURLY = "{".
+RCURLY = "}".
+LPAREN = "(".
+RPAREN = ")".
+COMMA = ",".
+TIMES = "*".
+PLUS = "+".
+LINECOMMENT = "line_comment".
+CHAR = "char".
+
+
+
+ID = {{ ['a'-'z' 'A'-'Z']['0'-'9' '_' 'a'-'z' 'A'-'Z' ]*  }}.
+NONNEG = {{ ['0'-'9']+ }}.
+IQUOTED = {{ '"' (((_ # ['\r''\n']) # ['\\' '"']) | ('\\' '\\') | ('\\' '"'))+ '"' }} .
+QUOTED = {{ '{''{' ((_ # '}') | ('}' (_ # '}')))+ '}''}' }}.
+
+
+
+file_ext = "gra"
+keywords =
+	("char","left","right") : type 
+	("->","(",")","[","]","{","}",":","|","=",">=",",","*","+") : special
+

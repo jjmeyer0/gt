@@ -1,0 +1,14 @@
+bug2 
+line_comment = "#".
+
+InputsNone : inputs -> LPAREN RPAREN.
+InputsSome : inputs -> { LPAREN id COLON tvar RPAREN }+.
+
+Id : id -> ID.
+Tvar : tvar -> TVAR.
+
+LPAREN="(".
+RPAREN=")".
+COLON=":".
+TVAR = {{ '\'' ['a'-'z' 'A'-'Z']+ }}.
+ID = {{ ['a'-'z' 'A'-'Z'] ['a'-'z' 'A'-'Z' '0'-'9' '\'' '_']* }}.

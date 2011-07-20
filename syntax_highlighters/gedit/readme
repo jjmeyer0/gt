@@ -1,0 +1,9 @@
+Make sure gedit is closed.
+
+Add the .lang file tos:
+	/usr/share/gtksourceview-2.0/language-specs/
+
+Now your language has a basic syntax mode in gedit.
+
+If you do not, you may have to select the Highlighted Mode.
+	View -> Highlighted Mode -> Others -> <name>

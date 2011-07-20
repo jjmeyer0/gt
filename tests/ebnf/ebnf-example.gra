@@ -1,0 +1,17 @@
+arith
+
+Term : expr -> factor {op factor}*.
+Fact : factor -> [unary_op] element.
+Element : element -> INT | VAR | LPAREN expr RPAREN.
+Op : op -> PLUS | TIMES.
+UnaryOp : unary_op -> MINUS.
+
+
+PLUS = "+".
+TIMES = "*".
+MINUS = "-".
+LPAREN = "(".
+RPAREN = ")".
+
+INT = {{['0'-'9']+}}.
+VAR = char {{ ['a'-'z''A'-'Z'] }}.

@@ -1,0 +1,13 @@
+ops
+
+line_comment  = "#".
+
+Nil : ps -> .
+Consa : ps -> ps op.
+
+Plus : op -> PLUS.
+Times : op -> TIMES.
+
+PLUS = "+".
+TIMES = "*".
+

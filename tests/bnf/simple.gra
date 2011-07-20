@@ -1,0 +1,7 @@
+simple
+
+Expr : expr -> ID PLUS expr.
+Id : expr -> ID.
+
+PLUS = "+".
+ID = "x".

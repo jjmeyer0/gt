@@ -1,0 +1,19 @@
+eq
+
+end_of_each_match = "\n   | _ -> false\r\n"
+
+Equality (P,x1,...,xn) ->
+	{{ emit_pattern 1; os ","; emit_pattern 2; os "-> true"; }}
+
+	(~ if(is_in_ast) then (
+			os " && "; 
+			if(is_terminal) then (
+				os ("snd "^x_i^"_1"); os " = "; os ("snd "^x_i^"_2")
+			)
+			else (
+				os (eq_i^"(");
+				if(is_cur_eq_first_nt && (is_list || is_opt)) then
+					os ("(d,"^x_i^"_1"^") , (d',"^x_i^"_2))")
+				else (os (x_i^"_1"); os " , "; os (x_i^"_2)"));
+			)
+		); ~| i ~| ~)

@@ -1,0 +1,11 @@
+nobug
+
+line_comment = "#".
+
+OptTParams : opt_tparams -> [ LANGLE tvar { COMMA tvar }* RANGLE ].
+Tvar : tvar -> TVAR.
+
+LANGLE="<".
+RANGLE=">".
+COMMA=",".
+TVAR = {{ '\'' ['a'-'z' 'A'-'Z']+ }}.

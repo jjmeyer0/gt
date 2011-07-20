@@ -1,0 +1,537 @@
+   0  $accept : %entry% $end
+
+   1  grammar : ID NEWLINE LINECOMMENT EQUALS IQUOTED NEWLINE pls
+   2          | ID NEWLINE pls
+
+   3  pls : production lexclasses extradata
+   4      | production pls
+
+   5  production : ID COLON ID ARROW elements NEWLINE
+
+   6  symbol : ID
+
+   7  elements :
+   8           | element elements
+
+   9  element : symbol
+  10          | LSQR_BRACKET elements RSQR_BRACKET
+  11          | LCURLY elements RCURLY LPAREN lr COMMA GTE NONNEG RPAREN
+  12          | LCURLY elements RCURLY PLUS
+  13          | LCURLY elements RCURLY TIMES
+
+  14  lr : LEFT
+  15     | RIGHT
+
+  16  lexclasses : lexclass
+  17             | lexclass lexclasses
+
+  18  lexclass : ID EQUALS quoted
+
+  19  quoted : QUOTED end_quoted
+  20         | CHAR QUOTED end_quoted
+  21         | IQUOTED end_iquoted
+
+  22  end_quoted : END_QUOTED NEWLINE
+  23             | END_QUOTED EOF
+
+  24  end_iquoted : NEWLINE
+  25              | EOF
+
+  26  extradata : QUOTED END_QUOTED
+  27            |
+
+  28  %entry% : '\001' grammar
+
+state 0
+	$accept : . %entry% $end  (0)
+
+	'\001'  shift 1
+	.  error
+
+	%entry%  goto 2
+
+
+state 1
+	%entry% : '\001' . grammar  (28)
+
+	ID  shift 3
+	.  error
+
+	grammar  goto 4
+
+
+state 2
+	$accept : %entry% . $end  (0)
+
+	$end  accept
+
+
+state 3
+	grammar : ID . NEWLINE LINECOMMENT EQUALS IQUOTED NEWLINE pls  (1)
+	grammar : ID . NEWLINE pls  (2)
+
+	NEWLINE  shift 5
+	.  error
+
+
+state 4
+	%entry% : '\001' grammar .  (28)
+
+	.  reduce 28
+
+
+state 5
+	grammar : ID NEWLINE . LINECOMMENT EQUALS IQUOTED NEWLINE pls  (1)
+	grammar : ID NEWLINE . pls  (2)
+
+	LINECOMMENT  shift 6
+	ID  shift 7
+	.  error
+
+	production  goto 8
+	pls  goto 9
+
+
+state 6
+	grammar : ID NEWLINE LINECOMMENT . EQUALS IQUOTED NEWLINE pls  (1)
+
+	EQUALS  shift 10
+	.  error
+
+
+state 7
+	production : ID . COLON ID ARROW elements NEWLINE  (5)
+
+	COLON  shift 11
+	.  error
+
+
+state 8
+	pls : production . lexclasses extradata  (3)
+	pls : production . pls  (4)
+
+	ID  shift 12
+	.  error
+
+	production  goto 8
+	pls  goto 13
+	lexclasses  goto 14
+	lexclass  goto 15
+
+
+state 9
+	grammar : ID NEWLINE pls .  (2)
+
+	.  reduce 2
+
+
+state 10
+	grammar : ID NEWLINE LINECOMMENT EQUALS . IQUOTED NEWLINE pls  (1)
+
+	IQUOTED  shift 16
+	.  error
+
+
+state 11
+	production : ID COLON . ID ARROW elements NEWLINE  (5)
+
+	ID  shift 17
+	.  error
+
+
+state 12
+	production : ID . COLON ID ARROW elements NEWLINE  (5)
+	lexclass : ID . EQUALS quoted  (18)
+
+	COLON  shift 11
+	EQUALS  shift 18
+	.  error
+
+
+state 13
+	pls : production pls .  (4)
+
+	.  reduce 4
+
+
+state 14
+	pls : production lexclasses . extradata  (3)
+	extradata : .  (27)
+
+	QUOTED  shift 19
+	$end  reduce 27
+
+	extradata  goto 20
+
+
+state 15
+	lexclasses : lexclass .  (16)
+	lexclasses : lexclass . lexclasses  (17)
+
+	ID  shift 21
+	$end  reduce 16
+	QUOTED  reduce 16
+
+	lexclasses  goto 22
+	lexclass  goto 15
+
+
+state 16
+	grammar : ID NEWLINE LINECOMMENT EQUALS IQUOTED . NEWLINE pls  (1)
+
+	NEWLINE  shift 23
+	.  error
+
+
+state 17
+	production : ID COLON ID . ARROW elements NEWLINE  (5)
+
+	ARROW  shift 24
+	.  error
+
+
+state 18
+	lexclass : ID EQUALS . quoted  (18)
+
+	CHAR  shift 25
+	QUOTED  shift 26
+	IQUOTED  shift 27
+	.  error
+
+	quoted  goto 28
+
+
+state 19
+	extradata : QUOTED . END_QUOTED  (26)
+
+	END_QUOTED  shift 29
+	.  error
+
+
+state 20
+	pls : production lexclasses extradata .  (3)
+
+	.  reduce 3
+
+
+state 21
+	lexclass : ID . EQUALS quoted  (18)
+
+	EQUALS  shift 18
+	.  error
+
+
+state 22
+	lexclasses : lexclass lexclasses .  (17)
+
+	.  reduce 17
+
+
+state 23
+	grammar : ID NEWLINE LINECOMMENT EQUALS IQUOTED NEWLINE . pls  (1)
+
+	ID  shift 7
+	.  error
+
+	production  goto 8
+	pls  goto 30
+
+
+state 24
+	production : ID COLON ID ARROW . elements NEWLINE  (5)
+	elements : .  (7)
+
+	LSQR_BRACKET  shift 31
+	LCURLY  shift 32
+	ID  shift 33
+	NEWLINE  reduce 7
+
+	elements  goto 34
+	element  goto 35
+	symbol  goto 36
+
+
+state 25
+	quoted : CHAR . QUOTED end_quoted  (20)
+
+	QUOTED  shift 37
+	.  error
+
+
+state 26
+	quoted : QUOTED . end_quoted  (19)
+
+	END_QUOTED  shift 38
+	.  error
+
+	end_quoted  goto 39
+
+
+state 27
+	quoted : IQUOTED . end_iquoted  (21)
+
+	EOF  shift 40
+	NEWLINE  shift 41
+	.  error
+
+	end_iquoted  goto 42
+
+
+state 28
+	lexclass : ID EQUALS quoted .  (18)
+
+	.  reduce 18
+
+
+state 29
+	extradata : QUOTED END_QUOTED .  (26)
+
+	.  reduce 26
+
+
+state 30
+	grammar : ID NEWLINE LINECOMMENT EQUALS IQUOTED NEWLINE pls .  (1)
+
+	.  reduce 1
+
+
+state 31
+	element : LSQR_BRACKET . elements RSQR_BRACKET  (10)
+	elements : .  (7)
+
+	LSQR_BRACKET  shift 31
+	LCURLY  shift 32
+	ID  shift 33
+	RSQR_BRACKET  reduce 7
+
+	elements  goto 43
+	element  goto 35
+	symbol  goto 36
+
+
+state 32
+	element : LCURLY . elements RCURLY LPAREN lr COMMA GTE NONNEG RPAREN  (11)
+	element : LCURLY . elements RCURLY PLUS  (12)
+	element : LCURLY . elements RCURLY TIMES  (13)
+	elements : .  (7)
+
+	LSQR_BRACKET  shift 31
+	LCURLY  shift 32
+	ID  shift 33
+	RCURLY  reduce 7
+
+	elements  goto 44
+	element  goto 35
+	symbol  goto 36
+
+
+state 33
+	symbol : ID .  (6)
+
+	.  reduce 6
+
+
+state 34
+	production : ID COLON ID ARROW elements . NEWLINE  (5)
+
+	NEWLINE  shift 45
+	.  error
+
+
+state 35
+	elements : element . elements  (8)
+	elements : .  (7)
+
+	LSQR_BRACKET  shift 31
+	LCURLY  shift 32
+	ID  shift 33
+	NEWLINE  reduce 7
+	RSQR_BRACKET  reduce 7
+	RCURLY  reduce 7
+
+	elements  goto 46
+	element  goto 35
+	symbol  goto 36
+
+
+state 36
+	element : symbol .  (9)
+
+	.  reduce 9
+
+
+state 37
+	quoted : CHAR QUOTED . end_quoted  (20)
+
+	END_QUOTED  shift 38
+	.  error
+
+	end_quoted  goto 47
+
+
+state 38
+	end_quoted : END_QUOTED . NEWLINE  (22)
+	end_quoted : END_QUOTED . EOF  (23)
+
+	EOF  shift 48
+	NEWLINE  shift 49
+	.  error
+
+
+state 39
+	quoted : QUOTED end_quoted .  (19)
+
+	.  reduce 19
+
+
+state 40
+	end_iquoted : EOF .  (25)
+
+	.  reduce 25
+
+
+state 41
+	end_iquoted : NEWLINE .  (24)
+
+	.  reduce 24
+
+
+state 42
+	quoted : IQUOTED end_iquoted .  (21)
+
+	.  reduce 21
+
+
+state 43
+	element : LSQR_BRACKET elements . RSQR_BRACKET  (10)
+
+	RSQR_BRACKET  shift 50
+	.  error
+
+
+state 44
+	element : LCURLY elements . RCURLY LPAREN lr COMMA GTE NONNEG RPAREN  (11)
+	element : LCURLY elements . RCURLY PLUS  (12)
+	element : LCURLY elements . RCURLY TIMES  (13)
+
+	RCURLY  shift 51
+	.  error
+
+
+state 45
+	production : ID COLON ID ARROW elements NEWLINE .  (5)
+
+	.  reduce 5
+
+
+state 46
+	elements : element elements .  (8)
+
+	.  reduce 8
+
+
+state 47
+	quoted : CHAR QUOTED end_quoted .  (20)
+
+	.  reduce 20
+
+
+state 48
+	end_quoted : END_QUOTED EOF .  (23)
+
+	.  reduce 23
+
+
+state 49
+	end_quoted : END_QUOTED NEWLINE .  (22)
+
+	.  reduce 22
+
+
+state 50
+	element : LSQR_BRACKET elements RSQR_BRACKET .  (10)
+
+	.  reduce 10
+
+
+state 51
+	element : LCURLY elements RCURLY . LPAREN lr COMMA GTE NONNEG RPAREN  (11)
+	element : LCURLY elements RCURLY . PLUS  (12)
+	element : LCURLY elements RCURLY . TIMES  (13)
+
+	LPAREN  shift 52
+	TIMES  shift 53
+	PLUS  shift 54
+	.  error
+
+
+state 52
+	element : LCURLY elements RCURLY LPAREN . lr COMMA GTE NONNEG RPAREN  (11)
+
+	LEFT  shift 55
+	RIGHT  shift 56
+	.  error
+
+	lr  goto 57
+
+
+state 53
+	element : LCURLY elements RCURLY TIMES .  (13)
+
+	.  reduce 13
+
+
+state 54
+	element : LCURLY elements RCURLY PLUS .  (12)
+
+	.  reduce 12
+
+
+state 55
+	lr : LEFT .  (14)
+
+	.  reduce 14
+
+
+state 56
+	lr : RIGHT .  (15)
+
+	.  reduce 15
+
+
+state 57
+	element : LCURLY elements RCURLY LPAREN lr . COMMA GTE NONNEG RPAREN  (11)
+
+	COMMA  shift 58
+	.  error
+
+
+state 58
+	element : LCURLY elements RCURLY LPAREN lr COMMA . GTE NONNEG RPAREN  (11)
+
+	GTE  shift 59
+	.  error
+
+
+state 59
+	element : LCURLY elements RCURLY LPAREN lr COMMA GTE . NONNEG RPAREN  (11)
+
+	NONNEG  shift 60
+	.  error
+
+
+state 60
+	element : LCURLY elements RCURLY LPAREN lr COMMA GTE NONNEG . RPAREN  (11)
+
+	RPAREN  shift 61
+	.  error
+
+
+state 61
+	element : LCURLY elements RCURLY LPAREN lr COMMA GTE NONNEG RPAREN .  (11)
+
+	.  reduce 11
+
+
+27 terminals, 15 nonterminals
+29 grammar rules, 62 states

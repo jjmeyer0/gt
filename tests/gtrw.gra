@@ -1,0 +1,99 @@
+gtrw
+
+line_comment = "#".		
+(* Comment delimeter is the hash mark *)
+
+
+Grammar       :  grammar    ->   ID [ props ] { production }+.
+
+(* 
+	Properties of the language to be defined. Comment delimeter and 
+	whether it is sensitive to newlines.
+*)
+
+GraProp       :  props      ->    LINECOMMENT EQUALS IQUOTED DOT.
+
+
+
+Production    :  production     ->  ID COLON ID ARROW prod_body DOT.
+
+ProdBody      :  prod_body      ->  [ BAR ] { element }+ { BAR { element }+ }*.
+
+
+Element       :  element   ->    ID | regexp.
+ElementRep    :  element   ->    LCURLY prod_body RCURLY meta_opts.
+ElementOpt    :  element   ->    LSQR_BRACKET prod_body RSQR_BRACKET.
+
+
+(* 
+   DIGITS   : [ 0-9 ]
+	UPPER    : [ A-Z ]
+	LOWER    : [ a-z ]
+	LETTERS  : [ a-z A-Z ]
+	IQUOTED  : used to define string literal
+	CQUOTED  : used to define char literal
+*)
+RegExp        :  regexp     ->   DIGITS | UPPER | LOWER | LETTERS | IQUOTED | CQUOTED.
+
+
+(* 
+	TIMES      : Zero or more repetitions
+	PLUS       : One or more repetitions
+	LPAREN ... : left or right assoc. with n repetitions where n is NONNEG
+*)
+MetaOptions   :  meta_opts ->    TIMES | PLUS | LPAREN lr COMMA GTE NONNEG RPAREN.
+LeftOrRight   :  lr         ->   LEFT | RIGHT.
+
+
+
+
+
+(* Special Symbols *)
+BAR           =  "|".
+DOT			  =  ".".
+COLON         =  ":".
+EQUALS        =  "=".
+LSQR_BRACKET  =  "[".
+RSQR_BRACKET  =  "]".
+LCURLY        =  "{".
+RCURLY        =  "}".
+LPAREN        =  "(".
+RPAREN        =  ")".
+COMMA         =  ",".
+TIMES         =  "*".
+PLUS          =  "+".
+GTE           =  ">=".
+ARROW         =  "->".
+
+(* Keywords *)
+LEFT          =  "left".
+RIGHT         =  "right".
+LINECOMMENT   =  "line_comment".
+
+(* Predefined regular expressions. *)
+DIGITS        =  ":digits:".
+UPPER         =  ":upper:".
+LOWER         =  ":lower:".
+LETTERS       =  ":letters:".
+
+
+(* 
+	Regular Expressions :
+		ID      : sequence of numbers, letters and underscores. 
+						Min length is 1 and must start with a letter.
+		NONNEG  : a non-negative numer
+		CQUOTED : A single character surrounded by single quotes.
+						Must escape special chars.
+		IQUOTED : a sequence of characters surrounded by double 
+						quotes. Must escaped special chars.
+*)
+ID       =  {{ ['a'-'z' 'A'-'Z']['0'-'9' '_' 'a'-'z' 'A'-'Z' ]*  }}.
+NONNEG   =  {{ ['0'-'9']+ }}.
+CQUOTED  =  {{ '\'' (((_ # ['\r''\n']) # ['\\' '"']) | ('\\' '\\') | ('\\' '\''))  '\'' }}.
+IQUOTED  =  {{ '"' (((_ # ['\r''\n']) # ['\\' '"']) | ('\\' '\\') | ('\\' '"'))+ '"' }} .
+
+
+
+
+
+

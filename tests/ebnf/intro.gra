@@ -1,0 +1,14 @@
+lists
+
+Grammar : grammar -> { olist }*.
+
+OList : olist -> LSBRACKET [ element { SEMI element }* ] RSBRACKET.
+
+Element :  element -> VAR | INT.
+
+LSBRACKET = "[".
+RSBRACKET = "]".
+SEMI = ";".
+
+VAR = {{ ['a'-'z''A'-'Z'] ['a'-'z''A'-'Z''0'-'9''_']* }}.
+INT = {{ ['0'-'9']+ }}.

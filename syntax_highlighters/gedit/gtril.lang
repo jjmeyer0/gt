@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<language id="gtril" _name="GTRIL" version="2.0" _section="Others">
+  <metadata>
+    <property name="mimetypes">text/x-gtril</property>
+    <property name="globs">*.gtril</property>
+    <property name="block-comment-start">(*</property>
+    <property name="block-comment-end">*)</property>
+  </metadata>
+
+  <styles>
+    <style id="comment" _name="Comment" map-to="def:comment"/>
+    <style id="base-n-integer" _name="Base-N Integer" map-to="def:base-n-integer"/>
+    <style id="decimal" _name="Decimal number" map-to="def:decimal"/>
+    <style id="string" _name="String" map-to="def:string"/>
+    <style id="keyword" _name="Keyword" map-to="def:keyword"/>
+    <style id="meta-keyword" _name="Type, module or object keyword" map-to="def:keyword"/>
+    <style id="fun-keyword" _name="Builtin-function keyword" map-to="def:keyword"/>
+    <style id="type" _name="Data Type" map-to="def:type"/>
+    <style id="label" _name="Labeled argument" map-to="def:type"/>
+    <style id="poly-variant" _name="Polymorphic Variant" map-to="def:type"/>
+    <style id="variant" _name="Variant Constructor" map-to="def:type"/>
+    <style id="type-var" _name="Type Variable" map-to="def:type"/>
+    <style id="module" _name="Module Path" map-to="def:type"/>
+    <style id="escape" _name="Escaped Character" map-to="def:special-char"/>
+    <style id="boolean" _name="Boolean value" map-to="def:boolean"/>
+    <style id="error" _name="Error" map-to="def:error"/>
+    <style id="std-modules" _name="Standart Modules" map-to="def:type"/>
+  </styles>
+
+  <definitions>
+    <define-regex id="cap-ident">\b[A-Z][A-Za-z0-9_']*</define-regex>
+    <define-regex id="low-ident">\b[a-z][A-Za-z0-9_']*</define-regex>
+    <define-regex id="char-esc">\\((\\|"|'|n|t|b|r)|[0-9]{3}|x[0-9a-fA-F]{2})</define-regex>
+
+    <context id="escape-seq" style-ref="escape">
+      <match>\%{char-esc}</match>
+    </context>
+
+    <!-- here's the main context -->
+    <context id="gtril" class="no-spell-check">
+      <include>
+
+	<context id="line-comment" style-ref="comment" end-at-line-end="true" class="comment" class-disabled="no-spell-check">
+		<start>#</start>
+		<include>
+			<context ref="def:in-line-comment"/>
+		</include>		
+	</context>
+	<context id="decimal" style-ref="decimal">
+	  <match>[-]?[0-9][0-9_]*[lLn]?</match>
+	</context>
+	<context id="label" style-ref="label">
+	  <match>[~?]\%{low-ident}</match>
+	</context>
+	<context id="poly-variant" style-ref="poly-variant">
+	  <match>`\%{cap-ident}</match>
+	</context>
+	<context id="modpath" style-ref="module">
+	  <!-- include final '.'?  At the moment, no.  -->
+	  <match>\%{cap-ident}(\.\%{cap-ident})*(?=\.)</match>
+	</context>
+	<context id="variant" style-ref="variant">
+	  <match>\%{cap-ident}</match>
+	</context>
+	<context id="string" style-ref="string">
+	  <start>"</start>
+	  <end>"</end>
+	  <include>
+	    <context ref="escape-seq"/>
+	  </include>
+	</context>
+
+	<context id="listlit">
+	  <start>\[</start>
+	  <end>(?&lt;!\|)\]</end>
+	  <include>
+	    <context ref="gtril"/>
+	  </include>
+	</context>
+	<context id="badlist" style-ref="error" extend-parent="false">
+	  <match>\]</match>
+	</context>
+	<context id="boolean-constant" style-ref="boolean">
+	  <keyword>true</keyword>
+	  <keyword>false</keyword>
+	</context>
+
+
+	<!-- Flow control & common keywords -->
+	<context id="keywords" style-ref="keyword">
+	  <keyword>cons</keyword>
+	  <keyword>list</keyword>
+	  <keyword>let</keyword>
+	  <keyword>rec</keyword>
+	  <keyword>type</keyword>
+	  <keyword>of</keyword>
+	  <keyword>in</keyword>
+	  <keyword>for</keyword>
+	  <keyword>to</keyword>
+	  <keyword>do</keyword>
+	  <keyword>done</keyword>
+	  <keyword>if</keyword>
+	  <keyword>then</keyword>
+	  <keyword>else</keyword>
+	  <keyword>match</keyword>
+	  <keyword>with</keyword>
+	  <keyword>return</keyword>
+	  <keyword>open</keyword>
+	</context>
+
+
+	<context id="types" style-ref="type">
+	  <!-- pervasives types -->
+	  <keyword>fun</keyword>
+	  <keyword>nil</keyword>
+	  <keyword>int</keyword>
+	  <keyword>char</keyword>
+	  <keyword>string</keyword>
+	  <keyword>bool</keyword>
+	  <keyword>list</keyword>
+	</context>
+
+      </include>
+    </context>
+  </definitions>
+</language>

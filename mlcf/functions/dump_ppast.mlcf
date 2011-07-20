@@ -1,0 +1,49 @@
+ppast
+
+PrettyprinterAST (P, x1,...,xn)->
+	{{ emit_pattern 0; os " ->  "; 
+		let count = ref 0 in
+		let print_space = ref false in 
+
+		 if(is_opt) then (
+			  if((List.length ss') > 0) then (os "os \"Some(\"; ")
+			  else (os "os \"None\"; ");
+		 )
+		 else if(is_list) then (
+			os "os \"[\"; "
+		 ) else (
+			os "os \""; os prettyprinterast; os "\"; os \"(\";"
+		);
+	}}
+	
+	 (~ 
+		 if(!print_space && (List.length ss') > 1 && !count < (List.length ss')) then (
+				if(is_list) then os "os \";\"; " 
+				else os "os \",\"; "
+		 )
+		 else print_space := true;
+
+
+		 if(is_in_ast) then (
+			 if(is_terminal) then (
+				os " print_new_line os to_pretty_print (fst d); ";
+				os " pp_terminal os to_pretty_print "
+			 )
+			 else (os ppast_i; os " os to_pretty_print ");
+
+			 if(is_cur_eq_first_nt && (is_list || is_opt)) then
+			 	os ( "(d,"^x_i^")" )
+			 else os ( x_i );
+		 )
+		 else (
+			if(is_terminal) then (
+				os ("print_new_line os to_pretty_print (fst "^x_i^"); ");
+				os "os \""; os (fst x1); os "(\"; os \"\\\"\"; os "; 
+				os string_of_terminal; os "; os \"\\\")\"";
+			)
+			else (
+				os "os \""; os (fst x1);
+			)
+		 ); os "; os \"\""; incr count; ~| i ~| ; ~)
+
+	{{ if(is_list) then (os " os \"]\"; "); if(List.length ss' <> 0) then os "os \")\"; "; os " () "; }}

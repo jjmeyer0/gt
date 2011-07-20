@@ -1,0 +1,36 @@
+pp
+
+
+PrettyPrinter (P, x1,...,xn)->
+	{{ emit_pattern 0; os " -> "; }}
+	
+	 (~ 
+				 if(is_terminal) then (
+					 os ("print_new_line os to_pretty_print (fst d); ");
+				    if(is_in_ast) then (
+						os " pp_terminal os to_pretty_print "
+					 )
+					 else (
+						os ("print_new_line os to_pretty_print (fst "^x_i^"); ");
+						os "os ";
+						os string_of_terminal
+					 );
+				 )
+				 else (
+					os pp_i; os " os to_pretty_print "
+				 );
+
+				 if(is_cur_eq_first_nt && (is_list || is_opt)) then (
+					 os ( " (d,"^x_i^")" );
+				 )
+				 else if(not(is_terminal && not(is_in_ast))) then (
+					os ( x_i );
+				 );
+				 if(is_terminal) then os "; os \" \" ";
+
+
+
+		 ~| i ~| ; ~)
+
+	{{ os " () "; }}
+

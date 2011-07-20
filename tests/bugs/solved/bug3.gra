@@ -1,0 +1,7 @@
+bug3
+line_comment = "#".
+
+Deref : deref -> { ID DOT }(left,>=0) ID.
+
+DOT=".".
+ID = {{ ['a'-'z' 'A'-'Z'] ['a'-'z' 'A'-'Z' '0'-'9' '\'' '_']* }}.
