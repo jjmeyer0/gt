@@ -1,3 +1,10 @@
+gt -- grammar tool
+Generate OCamllex and OCamlyacc files from a single grammar file.
+JJ Meyer, Aaron Stump, with contributions from Vilhelm Sjoeberg.
+
+
+Compilation Instructions
+
 This part is not needed unless you created a function with mlcf or
 an mlcf file was deleted/broken (eg. dump_mlcf_*). We are assuming 
 the user is in "gt/" directory:
