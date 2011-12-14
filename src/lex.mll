@@ -63,12 +63,11 @@ rule token = parse
   | "bool" { BOOL }
   | "error" { ERR }
   | "meta" { META }
-  | "line_comment" { LINECOMMENT }  
+  | "line_comment" { LINECOMMENT }
+  | "import" { IMPORT }
+  | "start_sym" { STARTSYM }
   | non_neg as str { NONNEG(str) } 
   | "{{" { quoted lexbuf  }
-
-
-
   | "\"" { iquoted lexbuf  }
   | id as str { ID(str) }
   | "}}" { END_QUOTED }

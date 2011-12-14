@@ -11,8 +11,8 @@ module Grammaru :
           elementu list list option
     type lexclassu = string * (string * bool)
     type grammaru =
-        Grammaru of string * string option * productionu list *
-          lexclassu list * highlights
+        Grammaru of string list option * string * string option *
+          productionu list * lexclassu list * highlights
     val get_nonterminal_strings : grammaru -> string list
     val get_start_symbol : grammaru -> string
     val is_newlnsens : string option -> bool

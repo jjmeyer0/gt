@@ -11,8 +11,8 @@ module Grammare :
           element list list option
     type lexclasse = string * string
     type grammare =
-        Grammare of string * string * string option * productione list *
-          lexclasse list * unit Trie.trie * highlights
+        Grammare of string list option * string * string * string option *
+          productione list * lexclasse list * unit Trie.trie * highlights
     val is_terminal : symbole -> bool
     val sym_name : symbole -> string
     val is_in_ast : unit Trie.trie -> string * bool -> bool

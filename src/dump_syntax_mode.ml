@@ -63,8 +63,9 @@ let get_vim (st:string) : string =
 	 | _ -> "Keyword"
 		*)
 
-let dump_gedit (g:grammar) : unit = 
-  match g with Grammar(name,_,cmt,_,_,_,syncolor) ->
+let dump_gedit (g:Grammar.grammar) : unit = 
+  match g with 
+		Grammar.Grammar(_,name,_,cmt,_,_,_,syncolor) ->
 	 let ofile = (open_out (name ^ ".lang")) in
 	 let os = output_string ofile in
 	 let ext = fst syncolor in
@@ -118,8 +119,9 @@ let dump_gedit (g:grammar) : unit =
 
 
 (* Dump Emacs mode *)
-let dump_emacs (g:grammar) : unit =
-  match g with Grammar(name,_,cmt,_,_,_,syncolor) ->
+let dump_emacs (g:Grammar.grammar) : unit =
+  match g with 
+		Grammar.Grammar(_,name,_,cmt,_,_,_,syncolor) ->
 	 let ofile = open_out (name ^ "-mode.el") in
 	 let os = output_string ofile in
 	 let keywords = snd syncolor in
@@ -210,10 +212,10 @@ let syncolor' (n:string) (t:unit trie) (lex:(string*string) list) : string*(stri
   in n,(("keyword",itr lex)::[])
 
 
-let dump_syntax_mode (Grammar(n,l,c,prods,lex,t,syncolor):grammar) = 
-  let g = Grammar(n,l,c,prods,lex,t,syncolor) in
+let dump_syntax_mode (Grammar.Grammar(im,n,l,c,prods,lex,t,syncolor):Grammar.grammar) = 
+  let g = Grammar.Grammar(im,n,l,c,prods,lex,t,syncolor) in
   match syncolor with
-	 | (ext,li) when ext <> "" && li <> [] -> dump_gedit g; dump_emacs g
-	 | _ -> 
-		let g = Grammar(n,l,c,prods,lex,t,syncolor' n t lex) in
-		dump_gedit g; dump_emacs g
+    | (ext,li) when ext <> "" && li <> [] -> dump_gedit g; dump_emacs g
+    | _ -> 
+      let g = Grammar.Grammar(im,n,l,c,prods,lex,t,syncolor' n t lex) in
+      dump_gedit g; dump_emacs g

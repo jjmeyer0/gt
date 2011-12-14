@@ -23,14 +23,14 @@ val numbered : 'a list -> ('a * int) list
 
 	 @param ss a list of symbols
 	 @return true if the hd of the list is a nonterminal otherwise false. *)
-val starts_with_nonterminal : Grammar.symbol list -> bool
+val starts_with_nonterminal : Grammar.Grammar.symbol list -> bool
 
 (** Finds the position of symbol with name of given string. 
 
 	 @param ss list of symbols to search for s
 	 @param s find position of symbol with name s
 	 @return an int representing the positions of string s in ss*)
-val svn_pos : Grammar.symbol list -> string -> int
+val svn_pos : Grammar.Grammar.symbol list -> string -> int
 
 (** The name to prefix functions. *)
 val dump_nm : string
@@ -40,4 +40,4 @@ val dump_nm : string
 
 	 @param g a grammar on which gviz function is based. 
 	 @return unit *)
-val dump_gviz : Grammar.grammar -> unit
+val dump_gviz : Grammar.Grammar.grammar -> unit

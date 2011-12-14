@@ -1,0 +1,2 @@
+all:
+	$(MAKE) -f ss_Makefile

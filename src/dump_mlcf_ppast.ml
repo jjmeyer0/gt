@@ -5,7 +5,7 @@ let os s = print_string s;;
 
 let starts_with sub st = 
 	let sub_ln = String.length sub in
-	if(sub_ln > String.length st) then (false)
+	if sub_ln > String.length st then false
 	else (
 		if(String.sub st 0 sub_ln = sub) then (true)
 		else (false)	
@@ -22,7 +22,7 @@ let numbered xs =
 let starts_with_nonterminal ss = 
 	match ss with
 		[] -> false
-		| s::ss' -> (not (is_terminal s));;
+		| s::ss' -> (not (Grammar.is_terminal s));;
 
 let svn_pos ss s = 
 	let n = ref 0 in 
@@ -43,8 +43,8 @@ let starts_with sub' st =
 
 let dump_nm = "ppast_";;
 
-let rec dump_mlcf_ppast (g:grammar) = 
-	match g with Grammar(name,_,_,ps,_,t,_) ->
+let rec dump_mlcf_ppast (g:Grammar.grammar) = 
+	match g with Grammar.Grammar(_,name,_,_,ps,_,t,_) ->
 		let ofile = (open_out (name ^ "_ppast.ml")) in
 		let os = output_string ofile in
 		let n = ref "" in
@@ -67,7 +67,7 @@ and pp_terminal (os:string->unit) (to_pretty_print:bool) = function
 	(d,str1) -> print_new_line os to_pretty_print (fst d); os str1";
  
 
-		List.iter (fun (Production(c,s,ss,ssop)) -> 
+		List.iter (fun (Grammar.Production(c,s,ss,ssop)) -> 
 let has_ors = match ssop with None -> false | _ -> true in
 let i = ref 0 in
 let prods ss = 
@@ -112,7 +112,7 @@ else os (symbol_ctor_name c)
 		let first = ref true in
 		List.iter (fun (s',n) ->
 			let x_i =
-				if (is_terminal s') then (if(is_in_ast t s') then ("str"^string_of_int n) else ("pd"^string_of_int n) )
+				if (Grammar.is_terminal s') then (if(Grammar.is_in_ast t s') then ("str"^string_of_int n) else ("pd"^string_of_int n) )
 				else (symbol_var_name s') ^ string_of_int n in
 			incr c';
 			if (true) then (
@@ -163,11 +163,11 @@ else (
 let _ = ppast_i in 
 let _ = ppast in 
 		let x_i = 
-		if (is_terminal x1) then (if(is_in_ast t x1) then ("str"^string_of_int n) else ("pd"^string_of_int n))
+		if (Grammar.is_terminal x1) then (if(Grammar.is_in_ast t x1) then ("str"^string_of_int n) else ("pd"^string_of_int n))
 		else (symbol_var_name x1) ^ string_of_int n in
-	let is_in_ast = is_in_ast t x1 in 
-	let is_terminal = is_terminal x1 in
-	let string_of_terminal = if(not(is_in_ast)) then (string_of_terminal g x1) else "" in
+	let is_in_ast = Grammar.is_in_ast t x1 in 
+	let is_terminal = Grammar.is_terminal x1 in
+	let string_of_terminal = if not(is_in_ast) then (Grammar.string_of_terminal g x1) else "" in
 	let is_cur_eq_first_nt = if((symbol_var_name x1) = symbol_var_name (s,false)) then true else false in
 
 
@@ -215,5 +215,5 @@ List.iter(prods) ssop;
 )ps;
 
 if (!num_same_nonterm > 1) then os "";os ";;\n";
-os ("\nlet ppast (os:string->unit) (to_pretty_print:bool) e = ppast_" ^ symbol_var_name (get_start_symbol g) ^ " os to_pretty_print e;;");
+os ("\nlet ppast (os:string->unit) (to_pretty_print:bool) e = ppast_" ^ symbol_var_name (Grammar.get_start_symbol g) ^ " os to_pretty_print e;;");
 close_out ofile;;

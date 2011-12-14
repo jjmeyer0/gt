@@ -1,36 +1,40 @@
 %{
-	open Grammar;;
 	let parse_error s = 
 		let error = s^" on line "^(string_of_int (!Util.line))^
 			" in file "^Util.fname 
 		in 
 		failwith error;;
 %}
-%token EOF BAR ARROW NEWLINE COLON EQUALS END_QUOTED LEFT RIGHT GTE LSQR_BRACKET RSQR_BRACKET LCURLY RCURLY LPAREN RPAREN COMMA TIMES PLUS LINECOMMENT CHAR KEYWORDS COMMENT NOTE INTEGER FLOAT DEC STRING KEYW TYPE SPECHAR BOOL ERR META FILEEXT NEWLINESENS DOT
+%token EOF BAR ARROW NEWLINE COLON EQUALS END_QUOTED LEFT RIGHT GTE LSQR_BRACKET RSQR_BRACKET LCURLY RCURLY LPAREN RPAREN COMMA TIMES PLUS LINECOMMENT CHAR KEYWORDS COMMENT NOTE INTEGER FLOAT DEC STRING KEYW TYPE SPECHAR BOOL ERR META FILEEXT NEWLINESENS DOT IMPORT STARTSYM
 %token <string> ID QUOTED IQUOTED NONNEG
 %start grammar
-%type <Grammar.grammaru> grammar
-%type <Grammar.productionu> production 
-%type <Grammar.productionu list * Grammar.lexclassu list> pls
-%type <Grammar.elementu list> elements 
-%type <Grammar.elementu> element
-%type <Grammar.symbolu> symbol
-%type <Grammar.lexclassu list> lexclasses
-%type <Grammar.lexclassu> lexclass
+%type <Grammaru.Grammaru.grammaru> grammar
+%type <Grammaru.Grammaru.productionu> production 
+%type <Grammaru.Grammaru.productionu list * Grammaru.Grammaru.lexclassu list> pls
+%type <Grammaru.Grammaru.elementu list> elements 
+%type <Grammaru.Grammaru.elementu> element
+%type <Grammaru.Grammaru.symbolu> symbol
+%type <Grammaru.Grammaru.lexclassu list> lexclasses
+%type <Grammaru.Grammaru.lexclassu> lexclass
 %type <string * bool> quoted
 %type <unit> end_quoted
 %type <string> lr  
 %%
 
 grammar:
-| ID LINECOMMENT EQUALS IQUOTED DOT pls highlights { 
-  let (ps,lcs) = $6 in 
-  Grammaru(String.lowercase($1),Some($4),ps,lcs,$7) 
+| imports ID linecmt pls highlights { 
+  let imps = match $1 with [] -> None | a -> Some a in
+  let (ps,lcs) = $4 in 
+  Grammaru.Grammaru.Grammaru(imps,String.lowercase($2),$3,ps,lcs,$5) 
 }
-| ID pls highlights { 
-  let (ps,lcs) = $2 in 
-  Grammaru(String.lowercase($1),None,ps,lcs,$3) 
-}
+
+imports:
+| { [] }
+| IMPORT ID DOT imports { $2::$4 }
+
+linecmt:
+| { None }
+| LINECOMMENT EQUALS IQUOTED DOT { Some($3) }
 
 pls:
 | production lexclasses { ([$1],$2) }
@@ -42,10 +46,10 @@ pls:
 production:
 | ID COLON ID ARROW prod_body DOT  {
   let prod_or = match snd $5 with [] -> None | a -> Some(a) in
-  Productionu($1,$3,fst $5,prod_or) 
+  Grammaru.Grammaru.Productionu($1,$3,fst $5,prod_or) 
 }
 | ID COLON ID ARROW DOT  {
-  Productionu($1,$3,[],None) 
+  Grammaru.Grammaru.Productionu($1,$3,[],None) 
 }
 
 prod_body:
@@ -64,22 +68,22 @@ elements :
 | element elements { $1::$2 }
 
 element :
-| symbol { Esymbolu($1) }
+| symbol { Grammaru.Grammaru.Esymbolu($1) }
 | LSQR_BRACKET prod_body RSQR_BRACKET { 
   let prods = (fst $2)::(snd $2) in
-  Eoptionu(prods) 
+  Grammaru.Grammaru.Eoptionu(prods) 
 }
 | LCURLY prod_body RCURLY LPAREN lr COMMA GTE NONNEG RPAREN { 
     let prods = (fst $2)::(snd $2) in
-	 Erepetitionu(prods,$5,$8) 
+	 Grammaru.Grammaru.Erepetitionu(prods,$5,$8) 
 }
 | LCURLY prod_body RCURLY PLUS { 
   let prods = (fst $2)::(snd $2) in
-  Erepetitionu(prods,"right","1") 
+  Grammaru.Grammaru.Erepetitionu(prods,"right","1") 
 }
 | LCURLY prod_body RCURLY TIMES  { 
     let prods = (fst $2)::(snd $2) in
-  Erepetitionu(prods,"right","0") 
+  Grammaru.Grammaru.Erepetitionu(prods,"right","0") 
 }
 
 lr :
@@ -87,7 +91,7 @@ lr :
 | RIGHT { "right" }
 
 lexclasses:
-| lexclass { [$1] }
+| { [] }
 | lexclass lexclasses { $1::$2 }
 
 lexclass:
@@ -123,7 +127,7 @@ tp:
 | COMMENT { "comment" }
 | NOTE { "note" }
 | INTEGER { "integer" }
-| FLOAT { "flaot" }
+| FLOAT { "float" }
 | DEC { "dec" }
 | STRING { "string" }
 | KEYW { "keyword" }

@@ -15,10 +15,10 @@ let numbered (xs:'a list) : ('a*int) list =
   let n = ref 0 in
   List.map (fun x -> incr n; x,!n) xs;;
 
-let starts_with_nonterminal (ss:symbol list) : bool = 
-  match ss with [] -> false | s::ss' -> not (is_terminal s);;
+let starts_with_nonterminal (ss:Grammar.symbol list) : bool = 
+  match ss with [] -> false | s::ss' -> not (Grammar.is_terminal s);;
 
-let svn_pos (ss:symbol list) (s:string) : int = 
+let svn_pos (ss:Grammar.symbol list) (s:string) : int = 
   let n = ref 0 in 
   let n' = ref 0 in 
   if not (starts_with_nonterminal ss) then incr n;
@@ -30,8 +30,8 @@ let svn_pos (ss:symbol list) (s:string) : int =
 
 let dump_nm = "gviz_";;
 
-let rec dump_gviz (g:grammar) = 
-  match g with Grammar(name,_,_,ps,_,t,_) ->
+let rec dump_gviz (g:Grammar.grammar) = 
+  match g with Grammar.Grammar(_,name,_,_,ps,_,t,_) ->
 	 let ofile = open_out (name ^ "_gviz.ml") in
 	 let os = output_string ofile in
 	 let n = ref "" in
@@ -65,7 +65,7 @@ and gviz_terminal (os:string->unit) (to_pretty_print:bool) (cons:string) = funct
 	 let rec itr ps = 
 		match ps with
 			 [] -> ()
-		  | (Production(c,s,ss,ssop))::tl ->
+		  | (Grammar.Production(c,s,ss,ssop))::tl ->
 			 let con = ref 0 in
 			 let has_ors = match ssop with None -> false | _ -> true in
 			 let i = ref 0 in
@@ -117,8 +117,8 @@ and gviz_terminal (os:string->unit) (to_pretty_print:bool) (cons:string) = funct
 					 let first = ref true in
 					 List.iter (fun (s',n) ->
 						let x_i =
-						  if is_terminal s' then (
-							 if is_in_ast t s' then "str"^string_of_int n
+						  if Grammar.is_terminal s' then (
+							 if Grammar.is_in_ast t s' then "str"^string_of_int n
 							 else "pd"^string_of_int n
 						  )
 						  else symbol_var_name s' ^ string_of_int n 
@@ -172,19 +172,20 @@ and gviz_terminal (os:string->unit) (to_pretty_print:bool) (cons:string) = funct
 				  let fir = ref true in
 				  List.iter(fun (x1,n) ->
 					 let x_i = 
-						if (is_terminal x1) then (
-						  if(is_in_ast t x1) then ("str"^string_of_int n) else ("pd"^string_of_int n)
+						if Grammar.is_terminal x1 then (
+						  if Grammar.is_in_ast t x1 then ("str"^string_of_int n) 
+						  else ("pd"^string_of_int n)
 						)
 						else (symbol_var_name x1) ^ string_of_int n 
 					 in
-					 let string_of_terminal = if(not (is_in_ast t x1)) then (string_of_terminal g x1) else "" in
-					 let is_cur_eq_first_nt = ((symbol_var_name x1) = symbol_var_name (s,false)) in
+					 let string_of_terminal = if not (Grammar.is_in_ast t x1) then Grammar.string_of_terminal g x1 else "" in
+					 let is_cur_eq_first_nt = (symbol_var_name x1) = symbol_var_name (s,false) in
 					 let gviz_i = dump_nm^(symbol_var_name x1) in
 					 
 					 let rec is_first_list li =
 						match li with
 							 [] -> false
-						  | (Production(c,s,ss,ssop))::tl -> 
+						  | (Grammar.Production(c,s,ss,ssop))::tl -> 
 							 if (starts_with "List_Left" c || 
 									 starts_with "List_Right" c) &&
 								("gviz_"^s) = gviz_i then true
@@ -192,8 +193,8 @@ and gviz_terminal (os:string->unit) (to_pretty_print:bool) (cons:string) = funct
 					 in
 
 					 
-					 if(is_terminal x1) then (
-						if(not(!fir && is_list)) then (
+					 if Grammar.is_terminal x1 then (
+						if not(!fir && is_list) then (
 						  if(!f) then (os constructor; os " os \";\\n\"; ");
 						) else os " os \";\\n\"; ";
 						print_label constructor;
@@ -204,7 +205,7 @@ and gviz_terminal (os:string->unit) (to_pretty_print:bool) (cons:string) = funct
 						os (" os (string_of_int del'); os \"_med"^(string_of_int !con)^"[label=\\\"\"; ");
 						incr con;
 
-						if is_in_ast t x1 then os " gviz_terminal os to_pretty_print ("
+						if Grammar.is_in_ast t x1 then os " gviz_terminal os to_pretty_print ("
 						else os (" os "^string_of_terminal)
 					 )
 					 else (
@@ -227,12 +228,12 @@ and gviz_terminal (os:string->unit) (to_pretty_print:bool) (cons:string) = funct
 						print_cons ();
 						os (" (d,"^x_i^") ");
 					 )
-					 else if not (is_terminal x1 && not (is_in_ast t x1)) then (
+					 else if not (Grammar.is_terminal x1 && not (Grammar.is_in_ast t x1)) then (
 						print_cons ();
 						os x_i; 
 					 );
 					 
-					 if is_terminal x1 then 
+					 if Grammar.is_terminal x1 then 
 						os "; os \"\\\"];\\n\"";
 					 os "; ";
 					 if !f then f := false;
@@ -259,6 +260,6 @@ and gviz_terminal (os:string->unit) (to_pretty_print:bool) (cons:string) = funct
 	 if !num_same_nonterm > 1 then os ""; os ";;\n";
 	 os ("\nlet gviz (os:string->unit) (to_pretty_print:bool) (cons:string) e = os "^
 			  "\"graph hopeful { \\nnode [shape=\\\"plaintext\\\"];\\n\"; gviz_" ^ 
-			  symbol_var_name (get_start_symbol g) ^ " os to_pretty_print cons e; os \"}\";;");
+			  symbol_var_name (Grammar.get_start_symbol g) ^ " os to_pretty_print cons e; os \"}\";;");
 	 close_out ofile
 ;;
