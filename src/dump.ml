@@ -552,7 +552,7 @@ let dump_Makefile (Grammar.Grammar(_,name,_,_,_,_,_,_):Grammar.grammar) : unit =
   lex os;
   let files = 
     ["parse.mli"; "parse.ml"; "lex.ml"; "pp.ml"; "ppast.ml"; 
-     "gviz.ml"; "syntax_mode.ml"; "eq.ml"; "main.ml"] 
+     "gviz.ml"; (*"syntax_mode.ml";*) "eq.ml"; "main.ml"] 
   in
   List.iter (compile os) files;
   link (name^".exe") os
