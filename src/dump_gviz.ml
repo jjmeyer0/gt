@@ -242,7 +242,9 @@ and gviz_terminal (os:string->unit) (to_pretty_print:bool) (cons:string) = funct
 				  if !f then (
 					 os constructor; os " os \";\\n\"; ";
 					 os constructor;
-					 os " os \"[label=\\\"None\\\"];\\n\"; "
+					 os " os \"[label=\\\"";
+					 os const;
+					 os "\\\"];\\n\"; "
 				  )
 				)
 				else ( 

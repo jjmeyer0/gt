@@ -1,4 +1,4 @@
-gt: estring.cmi elist.cmi trie.cmi grammar.cmi grammar.cmo grammare.cmi grammare.cmo grammaru.cmi grammaru.cmo usage.cmo version.cmo lex.cmo parse.cmo dump.cmi dump.cmo dump_gviz.cmi dump_gviz.cmo dump_syntax_mode.cmo dump_mlcf_ppast.cmo dump_mlcf_pp.cmo dump_mlcf_eq.cmo main.cmo Makefile
+gt: estring.cmi elist.cmi trie.cmi grammar.cmi grammar.cmo grammare.cmi grammare.cmo grammaru.cmi grammaru.cmo usage.cmo version.cmo lex.cmo parse.cmo dump.cmi dump.cmo dump_gviz.cmi dump_gviz.cmo dump_syntax_mode.cmi dump_syntax_mode.cmo dump_mlcf_ppast.cmo dump_mlcf_pp.cmo dump_mlcf_eq.cmo main.cmo Makefile
 	ocamlc -o gt estring.cmo elist.cmo util.cmo usage.cmo trie.cmo version.cmo grammar.cmo grammare.cmo grammaru.cmo lex.cmo parse.cmo dump.cmo dump_gviz.cmo dump_syntax_mode.cmo dump_mlcf_ppast.cmo dump_mlcf_pp.cmo dump_mlcf_eq.cmo main.cmo
 
 main.cmo: main.ml estring.cmi estring.cmo elist.cmi elist.cmo trie.cmi grammar.cmi grammar.cmo grammare.cmi grammare.cmo grammaru.cmi grammaru.cmo dump_gviz.cmi usage.cmo version.cmo parse.cmi lex.cmo dump_syntax_mode.cmo dump_mlcf_ppast.cmo dump_mlcf_pp.cmo dump_mlcf_eq.cmo dump.cmo
@@ -36,6 +36,9 @@ dump.cmi: dump.mli trie.cmo grammar.cmo
 
 dump.cmo: dump.ml trie.cmo grammar.cmo
 	ocamlc -c dump.ml
+
+dump_syntax_mode.cmi: dump_syntax_mode.mli trie.cmo grammar.cmo
+	ocamlc -c dump_syntax_mode.mli
 
 dump_syntax_mode.cmo: dump_syntax_mode.ml trie.cmo grammar.cmo
 	ocamlc -c dump_syntax_mode.ml
