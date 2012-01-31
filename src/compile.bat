@@ -10,6 +10,8 @@ ocamlc -c trie.mli
 ocamlc -c trie.ml	
 ocamlc -c version.ml
 ocamlc -c usage.ml
+
+ocamlc -c grammar.mli
 ocamlc -c grammar.ml
 ocamlc -c grammare.mli
 ocamlc -c grammare.ml
@@ -31,6 +33,7 @@ ocamlc -c dump.ml
 ocamlc -c dump_mlcf_ppast.ml
 ocamlc -c dump_mlcf_pp.ml
 ocamlc -c dump_mlcf_eq.ml
+ocamlc -c dump_syntax_mode.mli
 ocamlc -c dump_syntax_mode.ml
 ocamlc -c dump_gviz.mli
 ocamlc -c dump_gviz.ml
