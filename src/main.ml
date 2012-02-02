@@ -155,6 +155,9 @@ let () =
 	in Grammare.ge2g (Grammaru.gu2ge (merge imps parsed [fst sysargs]))
   in
 
+  
+  Grammar.check_for_keywords g;
+
   os ("\n\nGrammar for file "^gname^":\n\n");
   Grammar.output_grammar os g;
 
@@ -178,7 +181,6 @@ let () =
   os "\n\n\nStart Symbol: ";
   Grammar.output_symbol os (Grammar.get_start_symbol g);
   os "\n\n";
-
 
   checklex g terminals;
   checkconst g;

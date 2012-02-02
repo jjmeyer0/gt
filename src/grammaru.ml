@@ -3,6 +3,7 @@ open Trie
 open Elist
 open Estring
 
+
 module Grammaru = struct 
   type highlights = string * (string * string list) list;;
   type symbolu = string;;
@@ -86,6 +87,7 @@ module Grammaru = struct
     let ss = get_start_symbol g in
     Grammare.Grammare(ims,n,ss,lcd,prods,lcs',!r,hs)
   ;;
+
 end
 
 

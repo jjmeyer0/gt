@@ -108,4 +108,14 @@ module Grammar = struct
     output_lexclasses os t cls;
   ;;
 
+
+  let check_for_keywords g =
+    let keywords = [ "as" ; "function" ; "let" ; "fun" ; "end" ; "in" ; "rec" ; "not" ] in
+    let rec check_for_keywords syms = match syms with
+      | [] -> ()
+      | (s,_)::tl when List.exists ((=) s) keywords -> failwith ("Cannot use OCaml keywords. Failed on: "^s)
+      | _::tl -> check_for_keywords tl
+    in check_for_keywords (get_symbols g)
+  ;;
+
 end

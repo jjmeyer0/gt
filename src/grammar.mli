@@ -28,4 +28,5 @@ module Grammar :
       (string -> unit) -> unit Trie.trie -> (string * string) list -> unit
     val output_productions : (string -> unit) -> production list -> unit
     val output_grammar : (string -> unit) -> grammar -> unit
+    val check_for_keywords : grammar -> unit
   end

@@ -1,2 +1,2 @@
 all:
-	$(MAKE) -f ss_Makefile
+	$(MAKE) -f let_Makefile
