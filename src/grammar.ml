@@ -14,7 +14,7 @@ module Grammar = struct
   let get_ln_comment_delim (lcd:string option) : string =
     match lcd with
 	None -> "#"
-      | Some(s)-> String.sub s 1 (String.length s - 1)
+      | Some(s)-> String.sub s 1 (String.length s - 2)
   ;;
 
   let is_list (ctornm:string) : bool = 
