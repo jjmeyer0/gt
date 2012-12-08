@@ -10,9 +10,9 @@
 %type <Grammaru.Grammaru.t> grammar
 %type <Grammaru.Productionu.t> production 
 %type <Grammaru.Productionu.t list * Grammaru.LexClassu.t list> pls
-%type <Grammaru.Elementu.t list> elements 
-%type <Grammaru.Elementu.t> element
-%type <Grammaru.Esymbolu.t> symbol
+%type <Elementu.Elementu.t list> elements 
+%type <Elementu.Elementu.t> element
+%type <Elementu.Esymbolu.t> symbol
 %type <Grammaru.LexClassu.t list> lexclasses
 %type <Grammaru.LexClassu.t> lexclass
 %type <string * bool> quoted
@@ -69,30 +69,30 @@ elements :
 | element elements { $1::$2 }
 
 element :
-| symbol { Grammaru.Elementu.make_esymbolu $1 }
+| symbol { Elementu.Elementu.make_esymbolu $1 }
 | LSQR_BRACKET prod_body RSQR_BRACKET { 
   let prods = (fst $2)::(snd $2) in
-  Grammaru.Elementu.make_eoptu prods
+  Elementu.Elementu.make_eoptu prods
 }
 | LCURLY prod_body RCURLY LPAREN lr COMMA GTE NONNEG RPAREN { 
   let prods = (fst $2)::(snd $2) in
   let rep = int_of_string $8 in
   let assoc = 
-    if $5 = "right" then Grammaru.Erepetitionu.right 
-    else Grammaru.Erepetitionu.left 
+    if $5 = "right" then Elementu.Erepetitionu.right 
+    else Elementu.Erepetitionu.left 
   in
-  let el = Grammaru.Erepetitionu.make prods assoc rep in
-  Grammaru.Elementu.make_erepu el
+  let el = Elementu.Erepetitionu.make prods assoc rep in
+  Elementu.Elementu.make_erepu el
 }
 | LCURLY prod_body RCURLY PLUS { 
   let prods = (fst $2)::(snd $2) in
-  let els = Grammaru.Erepetitionu.make prods Grammaru.Erepetitionu.right 1 in
-  Grammaru.Elementu.make_erepu els
+  let els = Elementu.Erepetitionu.make prods Elementu.Erepetitionu.right 1 in
+  Elementu.Elementu.make_erepu els
 }
 | LCURLY prod_body RCURLY TIMES  { 
   let prods = (fst $2)::(snd $2) in
-  let erep = Grammaru.Erepetitionu.make prods Grammaru.Erepetitionu.right 0 in
-  Grammaru.Elementu.make_erepu erep
+  let erep = Elementu.Erepetitionu.make prods Elementu.Erepetitionu.right 0 in
+  Elementu.Elementu.make_erepu erep
 }
 
 lr :

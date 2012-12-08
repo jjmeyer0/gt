@@ -16,6 +16,8 @@ let () =
   let lexbuf = Lexing.from_channel in_channel in
   let parsed = Parse.grammar Lex.token lexbuf in
 
+  
+
   Grammaru.prettyprint (Grammaru.to_bnf parsed);
   Printf.printf "\n\ndone\n";
   

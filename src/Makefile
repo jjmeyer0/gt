@@ -1,7 +1,7 @@
-all: grammar.cmo grammaru.cmo grammaru.cmo util.cmo lex.cmo parse.cmo main.cmo Makefile
-	ocamlc -o gt grammar.cmo grammaru.cmo util.cmo lex.cmo parse.cmo main.cmo
+all: grammar.cmo elementu.cmo grammaru.cmo grammaru.cmo util.cmo lex.cmo parse.cmo main.cmo Makefile
+	ocamlc -o gt grammar.cmo elementu.cmo grammaru.cmo util.cmo lex.cmo parse.cmo main.cmo
 
-main.cmo: grammar.cmo grammaru.cmo util.cmo lex.cmo parse.cmo
+main.cmo: grammar.cmo elementu.ml grammaru.cmo util.cmo lex.cmo parse.cmo
 	ocamlc -c main.ml
 
 grammar.cmo: grammar.ml
@@ -9,6 +9,9 @@ grammar.cmo: grammar.ml
 
 grammaru.cmo: grammaru.ml
 	ocamlc -c grammaru.ml
+
+elementu.cmo: elementu.ml
+	ocamlc -c elementu.ml
 
 trie.cmi: trie.mli
 	ocamlc -c trie.mli
