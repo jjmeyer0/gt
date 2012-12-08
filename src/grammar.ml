@@ -1,121 +1,203 @@
-open Trie
-open Elist
-open Estring
+type comparison = Less | Greater | Equal
 
-module Grammar = struct
-  type highlights = string * (string * string list) list;;
-  type symbol = string * bool (* true iff terminal *);;
-  type production = Production of string * string * symbol list * symbol list list option;;
-  type lexclass = string * string;; 
-  type grammar = Grammar of string list option * string (* name *) * string (* start symbol *) * string option (* line comment *)
-    * production list * lexclass list * unit trie * highlights  (* the unit trie is for whether
-								   or not terminals are in the AST *);;
+module type ORDERED_TYPE = sig
+  type t
+  val compare: t -> t -> comparison
+  val print: t -> unit
+  val length : t -> int
+end
 
-  let get_ln_comment_delim (lcd:string option) : string =
-    match lcd with
-	None -> "#"
-      | Some(s)-> String.sub s 1 (String.length s - 2)
+module Nonterminal = struct
+  type t = string
+
+  let compare n n' = 
+    if n = n' then Equal
+    else if n < n' then Less
+    else Greater
   ;;
 
-  let is_list (ctornm:string) : bool = 
-    String.starts_with "List_Left" ctornm ||
-      String.starts_with "List_Right" ctornm
+  let make s = s
+  let name n = n
+  let length n = String.length n
+  let print n = print_string n
+end
+
+module Terminal = struct
+  type t = string
+
+  let compare t t' = 
+    if t = t' then Equal
+    else if t < t' then Less
+    else Greater
   ;;
 
-  let is_repetition (ctor_nm:string) : bool =
-    String.starts_with "List_Left_Repetition" ctor_nm ||
-      String.starts_with "List_Right_Repetition"	ctor_nm
+  let make s = s
+  let name t = t
+  let length t = String.length t
+  let print t = print_string t
+end
+
+module Symbol = struct
+  type t = 
+    | Terminal of Terminal.t
+    | Nonterminal of Nonterminal.t
+
+  let compare s s' = match s,s' with
+    | Nonterminal n,Nonterminal n' -> Nonterminal.compare n n'
+    | Terminal t,Terminal t' -> Terminal.compare t t'
+    | Nonterminal _,Terminal _ -> Greater
+    | Terminal _,Nonterminal _ -> Less
   ;;
 
-  let is_opt (ctornm:string) : bool = String.starts_with "Option`" ctornm;;
+  let make s is_terminal =
+    if is_terminal then Terminal (Terminal.make s)
+    else Nonterminal (Nonterminal.make s)
 
-  let is_terminal (s:symbol) : bool = snd s;;
+  let length = function
+    | Terminal t -> Terminal.length t
+    | Nonterminal n -> Nonterminal.length n
 
-  let starts_with_nonterminal (ss:symbol list) : bool =
-    match ss with
-	[] -> false
-      | s::ss' -> not (is_terminal s)
+  let terminal = function
+    | Terminal _ -> true
+    | Nonterminal _ -> false
+
+  let nonterminal s = not (terminal s)
+
+  let name = function
+    | Terminal t -> Terminal.name t
+    | Nonterminal n -> Nonterminal.name n
+
+  let print = function
+    | Terminal t -> Terminal.print t
+    | Nonterminal n -> Nonterminal.print n
+end
+
+module Set = functor (Elt: ORDERED_TYPE) -> struct
+  type t = Elt.t
+  type set = t list
+
+  let empty = []
+
+  let rec add e s = match s with
+    | [] -> [e]
+    | hd::tl -> 
+      match Elt.compare e hd with
+	| Equal -> s
+	| Less -> e::s
+	| Greater -> hd::(add e tl)
   ;;
 
-  let sym_name (s:symbol) : string = fst s;;
-
-  let svn_pos (ss:symbol list) (s:string) : int = 
-    let n = ref 0 in 
-    let n' = ref 0 in
-    if not (starts_with_nonterminal ss) then incr n;
-    List.iter(fun s' ->
-      incr n;
-      if (sym_name s') = sym_name (s,false) then (n' := !n);
-    ) ss; !n'
+  let rec member e s = match s with
+    | [] -> false
+    | hd::tl -> 
+      match Elt.compare e hd with
+	| Equal -> true
+	| Less -> false
+	| Greater -> member e tl
   ;;
 
-  let is_in_ast (t:unit trie) (s,b) : bool = (not b) (* not a terminal *) || (trie_contains t s);;
-
-  let string_of_terminal (Grammar(_,s,_,_,ps,cls,t,_)) (s,b) = List.assoc s cls;;
-
-  let rec num_productions (Grammar(_,_,_,_,ps,_,_,_):grammar) : int = List.length ps;;
-
-  (* return a list of all the symbols in g *)
-  let rec get_symbols (Grammar(_,_,_,_,productions,_,_,_):grammar) : symbol list =
-    let rec all_symbols ps =
-      match ps with
-	  [] -> []
-	| (Production(o,s,ss,ssop))::ps' -> 
-	  let ssop' = 
-	    match ssop with
-		None -> []
-	      | Some(x) -> (List.flatten x)
-	  in
-	  let ss = ss@ssop' in
-	  (s,false)::(List.append ss (all_symbols ps'))
-    in
-    let all_syms = all_symbols productions in
-    List.unique all_syms
+  let rec longest ?len:(l=0) s = match s with
+    | [] -> l
+    | hd::tl when Elt.length hd > l -> longest ~len:(Elt.length hd) tl
+    | hd::tl -> longest ~len:l tl
   ;;
 
-  (* return a list of all the terminal symbols in g *)
-  let get_terminals (g:grammar) : symbol list = List.filter is_terminal (get_symbols g);;
-
-  (* return a list of all the terminal symbols in g *)
-  let get_nonterminals (g:grammar) : symbol list = List.filter (fun n -> not (is_terminal n)) (get_symbols g);;
-
-  (* return the start symbol of the grammar *)
-  let get_start_symbol (Grammar(_,_,s,_,_,_,_,_) : grammar) : symbol = (s,false);;
-
-  let output_symbol (os:string->unit) ((s,_):symbol) = os s;;
+  let rec print_spaces i =
+    if i > 1 then (
+      print_string " ";
+      print_spaces (i-1)
+    )
+  ;;
   
-  let output_lexclasses (os:string->unit) (t:unit trie) (cls:'a list) : unit = 
-    List.iter (fun (s,c) -> 
-      let in_ast = trie_contains t s in
-      os "\n"; os s; os " = ";
-      if in_ast then os "{{ ";
-      os c;
-      if in_ast then os " }}"
-    ) cls
+  let prettyprint s =
+    let longest = longest s + 5 in
+    let rec print i s = match s with
+      | [] -> print_string "\n"
+      | hd::tl ->
+	Elt.print hd;
+	print_spaces (longest - (Elt.length hd));
+	if i mod 4 = 0 then print_string "\n";
+	print (i+1) tl
+    in
+    print 1 s;
   ;;
 
-  let  output_productions (os:string->unit) (ps:production list) : unit =
-    List.iter (fun (Production(n,s,ss,ssop)) ->
-      os (n^" : "^s^" ->");
-      List.iter (fun s -> os " "; output_symbol os s) ss;
-      os "\n";
-    ) ps
-  ;;
-
-  let output_grammar (os:string->unit) (Grammar(_,s,_,_,ps,cls,t,_):grammar) : unit = 
-    os s; os "\n"; 
-    output_productions os ps;
-    output_lexclasses os t cls;
-  ;;
+  let print syms = List.iter (fun s -> Elt.print s; print_string " ") syms
+end
 
 
-  let check_for_keywords g =
-    let keywords = [ "as" ; "function" ; "let" ; "fun" ; "end" ; "in" ; "rec" ; "not" ] in
-    let rec check_for_keywords syms = match syms with
-      | [] -> ()
-      | (s,_)::tl when List.exists ((=) s) keywords -> failwith ("Cannot use OCaml keywords. Failed on: "^s)
-      | _::tl -> check_for_keywords tl
-    in check_for_keywords (get_symbols g)
+module TerminalSet = Set (Terminal)
+module NonterminalSet = Set (Nonterminal)
+module SymbolSet = Set (Symbol)
+
+module Production = struct
+  type t = string * string * Symbol.t list
+
+  let make constructor type_name symbols = (constructor,type_name,symbols)
+  let constructor (c,_,_) = c
+  let type_name (_,n,_) = n
+  let symbols (_,_,symbols) = symbols
+  let print (c,n,symbols) = 
+    print_string (c^" : "^n^" -> ");
+    SymbolSet.print symbols
   ;;
+
+  let update con' = function 
+    | (con,tp,syms) when String.contains con '`' -> (con',tp,syms)
+    | (con,tp,syms) -> (con,tp,syms)
 
 end
+
+
+module LexClass = struct
+  type id = string
+  type t = id * Symbol.t
+
+  let make l r = l,r
+  let print (l,r) = print_string (l^" = "^r)
+end
+
+module Grammar = struct
+  type imports = string list option
+  type name = string
+  type start_symbol = string
+  type line_comment = string option
+  type t = imports * name * start_symbol * line_comment * Production.t list * LexClass.t list
+
+  let merge g g' = ()
+  let make imports name start_symbol line_comment prods lexes = 
+    imports,name,start_symbol,line_comment,prods,lexes
+  let print (_,name,_,_,prods,lexes) =
+    List.iter (fun s -> Production.print s; print_string ".\n") prods;
+    print_string "\n";
+    List.iter (fun s -> LexClass.print s; print_string "\n") lexes
+
+  let update_prods (i,nm,ss,ln,prods,lexes) = 
+    (i,nm,ss,ln,List.map (Production.update "AHHH") prods,lexes)
+  ;;
+
+  let check_lex g = ()
+  let check_constructors g = ()
+  let check_keywords g = ()
+end
+
+(*
+let _ =
+  let grammar = 
+    let prods = 
+      Production.make "Expr" "expr" [Symbol.make "ID" true; Symbol.make "PLUS" true; Symbol.make "expr" false] :: 
+	Production.make "`ChangeExpr" "expr" [Symbol.make "ID" true; Symbol.make "MINUS" true; Symbol.make "expr" false] :: 
+	Production.make "`ChangeExpr" "expr" [Symbol.make "ID" true; Symbol.make "MULT" true; Symbol.make "expr" false] :: 
+	Production.make "`ChangeExpr" "expr" [Symbol.make "ID" true; Symbol.make "DIV" true; Symbol.make "expr" false] :: 
+	Production.make "Id" "expr" [Symbol.make "ID" true] :: []
+    in
+    let lexes =
+      LexClass.make "PLUS" "+" :: LexClass.make "MINUS" "-" :: LexClass.make "MULT" "*" ::
+      LexClass.make "DIV" "/" :: LexClass.make "ID" "x" :: []
+    in
+    Grammar.make None "simple" "expr" None prods lexes
+  in
+  Grammar.print (Grammar.update_prods grammar)
+  
+  *)
+

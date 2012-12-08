@@ -1,47 +1,46 @@
-open Char;;
+open Char
+open Estring
 
-type 'a trie = Tnone 
-             | Texact of char list * 'a
-             | Tnext of 'a option * 'a trie array
+module Trie = struct
+  type 'a t = 
+    | Tnone
+    | Texact of char list * 'a
+    | Tnext of 'a option * 'a t array
 
-let mk_trievec a = (Array.make 128 a);;
+  let make a = Array.make 128 a;;
 
-let rec trie_insert t s a = 
-  match t with 
-    Tnone -> Texact(s,a)
-  | Texact(s',a') -> 
-       (trie_insert (trie_insert (Tnext(None,(mk_trievec Tnone))) s' a') s a)
-  | Tnext(o,v) ->
-       match s with
-         [] -> Tnext(Some(a),v)
-       | c::s' -> 
-           let cc = (code c) in
-           Array.set v cc (trie_insert (Array.get v cc) s' a);
-           Tnext(o,v)
+  let rec insert t s a = match t with
+    | Tnone -> Texact(s,a)
+    | Texact(s',a') -> insert (insert (Tnext (None, (make Tnone))) s' a') s a
+    | Tnext (o,v) -> 
+      match s with 
+	| [] -> Tnext (Some a,v)
+	| c::s' -> 
+	  let cc = code c in
+	  Array.set v cc (insert (Array.get v cc) s' a);
+	  Tnext (o,v)
+  ;;
 
-let rec trie_lookup t s = 
-   match t with
-     Tnone -> None
-   | Texact(s',a) -> if s = s' then Some(a) else None
-   | Tnext(o,v) -> 
-       match s with
-         [] -> o
-       | c::s' -> trie_lookup (Array.get v (code c)) s'
+  let lookup t s = match t with
+    | Tnone -> None
+    | Texact (s',a) when s = s' -> Some a
+    | Texact (s',a) -> None
+    | Tnext (o,v) -> 
+      match s with
+	| [] -> o
+	| c::s' -> lookup (Array.get v (code c)) s'
+  ;;
 
-let rec charlist_of_string s i =
-  if (i = String.length s) then
-    []
-  else
-    (s.[i])::(charlist_of_string s (i+1));;
+  let insert t s a = insert t (String.charlist_of_string s) a;;
 
-let charlist_of_string s = charlist_of_string s 0;;
+  let lookup t s = lookup t (String.charlist_of_string s) a;;
 
-let trie_insert t s a = trie_insert t (charlist_of_string s) a;;
-let trie_lookup t s = trie_lookup t (charlist_of_string s);;
-let trie_contains t s =
-  match (trie_lookup t s) with
-      Some(_) -> true
-    | _ -> false;;
+  let contains t s = match (look_up t s) with
+    | Some _ -> true
+    | None -> false
+end
+
+
 
 
 (*
@@ -55,3 +54,13 @@ match (trie_lookup t "call") with
     Some x -> print_int x; print_string "\n"
   | None -> print_string "not found\n";;
 *)
+
+
+(*let rec charlist_of_string s i =
+  if (i = String.length s) then
+    []
+  else
+    (s.[i])::(charlist_of_string s (i+1))
+;;
+
+let charlist_of_string s = charlist_of_string s 0;;*)
