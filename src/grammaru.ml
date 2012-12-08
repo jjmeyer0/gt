@@ -32,24 +32,24 @@ module Productionu = struct
 
   let to_production (con,tpnm,elements,elementsopt) = con,tpnm,elements;;
 
-  let update_name prod =
+  let rec update_name prod =
+    (* todo Check for same constructor name, check for keywords, etc. *)
     print prod;
-    Printf.printf "\n\nEnter new constructor name for above: ";
-    read_line ()
+    Printf.printf "Enter new constructor name for above: ";
+    let ln = read_line () in
+    if (String.trim ln) = "" then update_name prod
+    else String.trim ln
   ;;
 
   let to_bnf prod = match prod with
     | (con,tpnm,elements,None) -> [prod]
     | (con,tpnm,elements,Some opts) as p ->
-      Printf.printf "Updating this production: ";
+      Printf.printf "\nUpdating this production:\n   ";
       print p;
-      Printf.printf "\n\n";
-      (update_name p,tpnm,elements,None)::
-	(List.map (fun es ->
-	  let new_prod = (update_name ("___",tpnm,es,None),tpnm,es,None) in 
-	  Printf.printf "\n\n";
-	  new_prod
-	) opts)
+      Printf.printf "\n";
+      List.map (fun es -> 
+	(update_name ("___",tpnm,es,None),tpnm,es,None)
+      ) (elements::opts)
   ;;
 end
 
