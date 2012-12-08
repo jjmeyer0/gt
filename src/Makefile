@@ -4,10 +4,10 @@ all: grammar.cmo grammaru.cmo grammaru.cmo util.cmo lex.cmo parse.cmo main.cmo M
 main.cmo: grammar.cmo grammaru.cmo util.cmo lex.cmo parse.cmo
 	ocamlc -c main.ml
 
-grammar.cmo: grammar.cmo
+grammar.cmo: grammar.ml
 	ocamlc -c grammar.ml
 
-grammaru.cmo: grammaru.cmo
+grammaru.cmo: grammaru.ml
 	ocamlc -c grammaru.ml
 
 trie.cmi: trie.mli

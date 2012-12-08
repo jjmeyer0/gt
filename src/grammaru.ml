@@ -107,31 +107,29 @@ module Productionu = struct
     in 
     print_body body;
     print_opts opts; 
-    Printf.printf "%s" " .\n"
+    Printf.printf " .\n"
   ;;
 
   let make con tp es eopts = con,tp,es,eopts
 
-  let to_production (con,tpnm,elements,elementsopt) =
-    con,tpnm,elements
-  ;;
+  let to_production (con,tpnm,elements,elementsopt) = con,tpnm,elements;;
 
   let update_name prod =
     print prod;
-    Printf.printf "%s\n\nEnter new constructor name for above: %s" "";
+    Printf.printf "\n\nEnter new constructor name for above: ";
     read_line ()
   ;;
 
   let to_bnf prod = match prod with
     | (con,tpnm,elements,None) -> [prod]
     | (con,tpnm,elements,Some opts) as p ->
-      Printf.printf "Updating this production: %s" "";
+      Printf.printf "Updating this production: ";
       print p;
-      Printf.printf "\n\n%s" "";
+      Printf.printf "\n\n";
       (update_name p,tpnm,elements,None)::
 	(List.map (fun es ->
 	  let new_prod = (update_name ("___",tpnm,es,None),tpnm,es,None) in 
-	  Printf.printf "%s" "\n\n";
+	  Printf.printf "\n\n";
 	  new_prod
 	) opts)
   ;;
@@ -164,7 +162,7 @@ module Grammaru = struct
     let cd = match cd with | None -> "\"#\"" | Some x -> x in
     Printf.printf "%s\n\nline_comment = %s\n\n" name cd;
     List.iter Productionu.print prods;
-    Printf.printf "%s" "\n\n";
+    Printf.printf "\n\n";
     List.iter LexClassu.print lexes
   ;;
 end
